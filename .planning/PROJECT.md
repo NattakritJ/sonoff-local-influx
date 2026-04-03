@@ -18,6 +18,14 @@ Reliable, low-latency energy data from Sonoff LAN devices flowing into InfluxDB 
 - ✓ Energy metrics extraction (power, voltage, current, energy) from device params — existing
 - ✓ Async event loop with `asyncio` + `aiohttp` — existing
 
+### Validated in Phase 2: Energy Extraction
+
+- ✓ `EnergyReading` dataclass with `power`, `voltage`, `current`, `energy_today`, `channel` fields
+- ✓ `extract_energy()` pure function for all single-channel UIIDs (32, 182, 190, 226, 262, 276, 277, 7032) with correct ×1/×0.01 scaling and string→float coercion
+- ✓ `extract_energy_multi()` for multi-channel UIIDs 126 (DualR3, 2ch) and 130 (SPM-4Relay, 4ch) with per-channel `EnergyReading` and ×0.01 scaling
+- ✓ Zero HA/ewelink imports in extractor — fully standalone pure-function module
+- ✓ 28-test TDD suite covering all UIIDs, edge cases, and type coercion
+
 ### Active
 
 - [ ] Standalone daemon entrypoint (no HA) — strips all HA lifecycle code
@@ -100,4 +108,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after initialization*
+*Last updated: 2026-04-03 — Phase 2 complete: energy extraction layer (EnergyReading + extract_energy + extract_energy_multi)*
