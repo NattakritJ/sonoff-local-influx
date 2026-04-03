@@ -68,7 +68,7 @@
 
 ### POWCT Grid Backfeed (Phase 6)
 
-- [ ] **EXT-06**: For UIID 190 (SONOFF POWCT) devices, daemon captures grid backfeed: `supplyPower` and `supplyCurrent` are stored as **negative** `power` and `current` InfluxDB fields (sign-encoding consumption vs export in a single field); `dayPowerSupply` is stored as a new `energy_backfeed_today` field (kWh, ×0.01 scaling); both-zero state (no power flow) writes explicit 0.0 values to keep the time series continuous
+- [x] **EXT-06**: For UIID 190 (SONOFF POWCT) devices, daemon captures grid backfeed: `supplyPower` and `supplyCurrent` are stored as **negative** `power` and `current` InfluxDB fields (sign-encoding consumption vs export in a single field); `dayPowerSupply` is stored as a new `energy_backfeed_today` field (kWh, ×0.01 scaling); both-zero state (no power flow) writes explicit 0.0 values to keep the time series continuous
 
 ---
 
@@ -149,4 +149,4 @@
 | LAN-07 | Phase 5: Static IP + Polling Mode | Pending |
 | LAN-08 | Phase 5: Static IP + Polling Mode | Pending |
 | LAN-09 | Phase 5: Static IP + Polling Mode | Pending |
-| EXT-06 | Phase 6: POWCT Grid Backfeed Capture | Pending |
+| EXT-06 | Phase 6: POWCT Grid Backfeed Capture | Complete |
