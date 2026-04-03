@@ -68,11 +68,11 @@ def test_constructor_creates_instance():
 
 
 # ---------------------------------------------------------------------------
-# Test 2: measurement name = device_id
+# Test 2: measurement name = device_name
 # ---------------------------------------------------------------------------
 
-def test_write_builds_point_with_measurement_device_id():
-    """write() builds Point with measurement = reading.device_id."""
+def test_write_builds_point_with_measurement_device_name():
+    """write() builds Point with measurement = device_name arg."""
     with patch("writer.InfluxDBClient3") as mock_cls, \
          patch("writer.Point") as mock_point_cls:
         mock_client = MagicMock()
@@ -88,15 +88,16 @@ def test_write_builds_point_with_measurement_device_id():
         reading = _reading(device_id="sonoff_abc123")
         asyncio.run(writer.write(reading, "My Device"))
 
-        mock_point_cls.assert_called_once_with("sonoff_abc123")
+        # NEW — device_name arg "My Device" is the measurement
+        mock_point_cls.assert_called_once_with("My Device")
 
 
 # ---------------------------------------------------------------------------
-# Test 3: tag device_id
+# Test 3: no tags
 # ---------------------------------------------------------------------------
 
-def test_write_adds_tag_device_id():
-    """write() adds tag 'device_id' = reading.device_id."""
+def test_write_adds_no_tags():
+    """write() adds NO tags — measurement name carries device identity."""
     with patch("writer.InfluxDBClient3") as mock_cls, \
          patch("writer.Point") as mock_point_cls:
         mock_client = MagicMock()
@@ -111,21 +112,19 @@ def test_write_adds_tag_device_id():
         reading = _reading(device_id="dev42")
         asyncio.run(writer.write(reading, "Dev 42"))
 
-        tag_calls = mock_point.tag.call_args_list
-        assert call("device_id", "dev42") in tag_calls
+        assert mock_point.tag.call_count == 0
 
 
 # ---------------------------------------------------------------------------
-# Test 4: tag device_name (with fallback to device_id when None)
+# Test 4: measurement name uses device_name (with fallback to device_id when None)
 # ---------------------------------------------------------------------------
 
-def test_write_adds_tag_device_name_from_arg():
-    """write() adds tag 'device_name' = device_name arg when provided."""
+def test_write_measurement_uses_device_name_arg():
+    """write() sets measurement name = device_name arg when provided."""
     with patch("writer.InfluxDBClient3") as mock_cls, \
          patch("writer.Point") as mock_point_cls:
         mock_client = MagicMock()
         mock_cls.return_value = mock_client
-
         mock_point = MagicMock()
         mock_point.tag.return_value = mock_point
         mock_point.field.return_value = mock_point
@@ -135,17 +134,15 @@ def test_write_adds_tag_device_name_from_arg():
         reading = _reading(device_id="dev1")
         asyncio.run(writer.write(reading, "Kitchen Plug"))
 
-        tag_calls = mock_point.tag.call_args_list
-        assert call("device_name", "Kitchen Plug") in tag_calls
+        mock_point_cls.assert_called_once_with("Kitchen Plug")
 
 
-def test_write_tag_device_name_falls_back_to_device_id_when_none():
-    """write() tag 'device_name' falls back to device_id when device_name arg is None."""
+def test_write_measurement_falls_back_to_device_id_when_name_is_none():
+    """write() sets measurement name = device_id when device_name arg is None."""
     with patch("writer.InfluxDBClient3") as mock_cls, \
          patch("writer.Point") as mock_point_cls:
         mock_client = MagicMock()
         mock_cls.return_value = mock_client
-
         mock_point = MagicMock()
         mock_point.tag.return_value = mock_point
         mock_point.field.return_value = mock_point
@@ -155,8 +152,7 @@ def test_write_tag_device_name_falls_back_to_device_id_when_none():
         reading = _reading(device_id="dev99")
         asyncio.run(writer.write(reading, None))
 
-        tag_calls = mock_point.tag.call_args_list
-        assert call("device_name", "dev99") in tag_calls
+        mock_point_cls.assert_called_once_with("dev99")
 
 
 # ---------------------------------------------------------------------------
