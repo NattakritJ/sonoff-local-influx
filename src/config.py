@@ -9,6 +9,7 @@ _LOGGER = logging.getLogger(__name__)
 
 class DeviceConfig(TypedDict, total=False):
     device_id: str          # required
+    uiid: int               # required — Sonoff device UIID (e.g. 190 for POWR3); not broadcast via mDNS
     devicekey: str          # required for encrypted devices; omit for DIY
     device_name: str        # optional display name
 
@@ -23,7 +24,7 @@ def parse_config() -> list[DeviceConfig]:
     if not raw:
         print(
             "ERROR: SONOFF_DEVICES environment variable is required.\n"
-            'Expected JSON array, e.g.: \'[{"device_id":"1000xxxxxx","devicekey":"abc..."}]\'',
+            'Expected JSON array, e.g.: \'[{"device_id":"1000xxxxxx","uiid":190,"devicekey":"abc..."}]\'',
             file=sys.stderr,
         )
         sys.exit(1)
@@ -49,9 +50,19 @@ def parse_config() -> list[DeviceConfig]:
                 file=sys.stderr,
             )
             sys.exit(1)
+        if "uiid" not in dev:
+            print(
+                f"ERROR: SONOFF_DEVICES[{i}] (device_id={dev.get('device_id', '?')!r}) "
+                f"is missing the required 'uiid' field.\n"
+                f"  The UIID is the Sonoff device type ID (e.g. 190 for POWR3, 32 for S31).\n"
+                f"  Find it in the eWeLink app or from your device's cloud data.",
+                file=sys.stderr,
+            )
+            sys.exit(1)
         validated.append(
             DeviceConfig(
                 device_id=dev["device_id"],
+                uiid=int(dev["uiid"]),
                 devicekey=dev.get("devicekey", ""),
                 device_name=dev.get("device_name", dev["device_id"]),
             )
