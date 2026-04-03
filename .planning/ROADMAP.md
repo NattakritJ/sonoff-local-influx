@@ -38,7 +38,11 @@ Plans:
   2. POWR3/S61/DualR3/SPM variants (UIIDs 126, 130, 190, 226, 262, 276, 277, 7032) produce values scaled by ×0.01; POWR2/S40 (UIIDs 32, 182) pass through ×1
   3. String, integer, and float raw inputs all produce `float` output — no `TypeError` or field type mismatch possible
   4. Multi-channel devices (DualR3, SPM-4Relay) emit one `EnergyReading` per channel with a `channel` tag set correctly
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — EnergyReading dataclass + extract_energy() for all single-channel UIIDs (32, 182, 190, 226, 262, 276, 277, 7032) with per-UIID scaling + type coercion
+- [ ] 02-02-PLAN.md — extract_energy_multi() for multi-channel DualR3 (UIID 126) and SPM-4Relay (UIID 130) with channel tag
 
 ### Phase 3: InfluxDB Writer
 **Goal**: An isolated `InfluxWriter` class that writes energy events to InfluxDB 3 Core asynchronously, with correct schema, without blocking the event loop, and with log-and-continue error handling
