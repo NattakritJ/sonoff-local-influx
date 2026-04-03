@@ -47,6 +47,7 @@ class EnergyReading:
     current: float | None
     energy_today: float | None  # derived from dayKwh × 0.01
     channel: int | None  # None for single-channel; 1-based for multi-channel
+    energy_backfeed_today: float | None = None  # daily export kWh (UIID 190 only; dayPowerSupply × 0.01)
 
 
 # UIIDs whose raw values are already in final units (×1 pass-through)
@@ -154,6 +155,63 @@ def extract_energy(
     if raw_power is None and raw_current is None and raw_voltage is None:
         return None
 
+    # -----------------------------------------------------------------------
+    # UIID 190 (POWCT): sign-encoded backfeed extraction
+    # supplyPower > 0 means grid export → use negative sign in power/current.
+    # consumption (power > 0, supplyPower == 0) stays positive as before.
+    # Both-zero: write 0.0 explicitly (per D-13) — never return None for 190.
+    # -----------------------------------------------------------------------
+    if uiid == 190:
+        raw_supply_power = params.get("supplyPower")
+        raw_supply_current = params.get("supplyCurrent")
+        raw_day_supply = params.get("dayPowerSupply")
+
+        supply_power_val = _to_float(raw_supply_power) if raw_supply_power is not None else 0.0
+        supply_current_val = _to_float(raw_supply_current) if raw_supply_current is not None else 0.0
+
+        # Resolve power/current using three-way logic (per D-07):
+        consumption_power = _to_float(raw_power) if raw_power is not None else 0.0
+        consumption_current = _to_float(raw_current) if raw_current is not None else 0.0
+
+        if consumption_power > 0 and supply_power_val == 0:
+            # Normal consumption: use positive values
+            power = round(consumption_power * 0.01, 2)
+            current = round(consumption_current * 0.01, 2)
+        elif supply_power_val > 0 and consumption_power == 0:
+            # Grid export: negate supply values (per D-04)
+            power = round(-supply_power_val * 0.01, 2)
+            current = round(-supply_current_val * 0.01, 2)
+        elif consumption_power > 0 and supply_power_val > 0:
+            # Defensive: both non-zero (shouldn't happen per D-09) — use consumption
+            power = round(consumption_power * 0.01, 2)
+            current = round(consumption_current * 0.01, 2)
+        else:
+            # Both zero: write 0.0 explicitly (per D-13)
+            power = 0.0
+            current = 0.0
+
+        voltage = round(_to_float(raw_voltage) * 0.01, 2) if raw_voltage is not None else None
+
+        energy_backfeed_today: float | None = None
+        if raw_day_supply is not None:
+            energy_backfeed_today = round(_to_float(raw_day_supply) * 0.01, 4)
+
+        energy_today_190: float | None = None
+        raw_day_kwh = params.get("dayKwh")
+        if raw_day_kwh is not None:
+            energy_today_190 = round(_to_float(raw_day_kwh) * 0.01, 4)
+
+        return EnergyReading(
+            device_id=device_id,
+            uiid=uiid,
+            power=power,
+            voltage=voltage,
+            current=current,
+            energy_today=energy_today_190,
+            channel=None,
+            energy_backfeed_today=energy_backfeed_today,
+        )
+
     # Apply scale factor and round to 2 dp to eliminate IEEE 754 artifacts
     power = round(_to_float(raw_power) * scale, 2) if raw_power is not None else None
     current = round(_to_float(raw_current) * scale, 2) if raw_current is not None else None
@@ -174,6 +232,7 @@ def extract_energy(
         current=current,
         energy_today=energy_today,
         channel=None,
+        energy_backfeed_today=None,
     )
 
 
@@ -231,6 +290,7 @@ def extract_energy_multi(
                 current=current,
                 energy_today=None,  # No dayKwh for DualR3/SPM via LAN
                 channel=ch_idx + 1,  # 1-based channel number
+                energy_backfeed_today=None,
             )
         )
 
