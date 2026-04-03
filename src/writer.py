@@ -38,7 +38,7 @@ class InfluxWriter:
         """Write one EnergyReading to InfluxDB.
 
         - measurement = device_name (fallback: device_id when device_name is None)
-        - fields: power, voltage, current, energy_today — None values omitted (per D-03)
+        - fields: power, voltage, current, energy_today, energy_backfeed_today — None values omitted (per D-03)
         - Uses asyncio.to_thread() to avoid blocking the event loop (per D-08, INF-05)
         - On any write failure: logs ERROR, returns None — does not raise (per D-10, INF-06)
         """
@@ -52,6 +52,8 @@ class InfluxWriter:
             fields["current"] = reading.current
         if reading.energy_today is not None:
             fields["energy_today"] = reading.energy_today
+        if reading.energy_backfeed_today is not None:
+            fields["energy_backfeed_today"] = reading.energy_backfeed_today
 
         # Nothing to write — skip (avoids writing empty points)
         if not fields:
