@@ -38,15 +38,21 @@ Reliable, low-latency energy data from Sonoff LAN devices flowing into InfluxDB 
 - ✓ Integration test suite with auto-skip when `INFLUX_HOST` unset — CI-safe
 - ✓ 18-test TDD unit suite + 4 integration tests verified against live InfluxDB 3 Core
 
+### Validated in Phase 4: Integration + Docker
+
+- ✓ `SonoffDaemon` class wires ewelink LAN transport → `extract_energy()`/`extract_energy_multi()` → `InfluxWriter.write()` in a single async event loop (OPS-03, OPS-04)
+- ✓ `parse_influx_config()` reads `INFLUX_HOST`, `INFLUX_TOKEN`, `INFLUX_DATABASE` with fail-fast per-variable error messages (CFG-04)
+- ✓ Heartbeat loop logs write counter every 60 seconds
+- ✓ Graceful SIGTERM/SIGINT shutdown within 10 seconds
+- ✓ Structured INFO log per write: `WRITE | device_id (name) | ch=- | power=X W | ...`
+- ✓ `Dockerfile` — `python:3.12-slim-bookworm`, non-root `sonoff` user, layer-cache optimized (DOC-01, DOC-02)
+- ✓ `docker-compose.yml` — `network_mode: host` for mDNS multicast, `env_file: .env`, log rotation (DOC-03, DOC-04)
+- ✓ `.env.example` — all 4 required env vars documented with inline comments and examples (DOC-05)
+- ✓ All 4 dependencies pinned in `requirements.txt` with `==` version specifiers
+
 ### Active
 
-- [ ] Standalone daemon entrypoint (no HA) — strips all HA lifecycle code
-- [ ] Docker image with env var configuration (InfluxDB URL, token, bucket; device list)
-- [ ] Wire LAN transport → energy extractor → InfluxWriter into main event loop
-- [ ] Configurable device list (specific device IDs/IPs — no auto-discover)
-- [ ] Support both encrypted and plain LAN protocols (auto-detect per device)
-- [ ] Structured logging with log-and-continue on InfluxDB write failure
-- [ ] Graceful shutdown (SIGTERM/SIGINT handling)
+(none — all milestone v1.0 requirements delivered)
 
 ### Out of Scope
 
@@ -97,8 +103,8 @@ The HA entity layer (`__init__.py`, all platform files, `config_flow.py`, `entit
 | Strip all HA code rather than wrapping it | Avoid HA import chain; reduces dependencies by ~15 packages | — Pending |
 | `influxdb3-python` client | Official v3 client; supports InfluxDB 3 write API with token auth | Validated in Phase 3 — pinned at 0.18.0 |
 | Per-device measurements in InfluxDB | Easier to query per-device; avoids tag cardinality issues | Validated in Phase 3 — measurement=device_id confirmed |
-| Docker-only deployment | Simplest reproducible environment; no system Python management | — Pending |
-| LAN-only (no cloud fallback) | Simpler auth model; no eWeLink credentials needed | — Pending |
+| Docker-only deployment | Simplest reproducible environment; no system Python management | Validated in Phase 4 — Dockerfile + docker-compose.yml delivered |
+| LAN-only (no cloud fallback) | Simpler auth model; no eWeLink credentials needed | Validated in Phase 4 — XRegistryLocal only, no cloud imports |
 
 ## Evolution
 
@@ -118,4 +124,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 — Phase 3 complete: InfluxWriter async write layer (writer.py, 18 unit tests, 4 integration tests, requirements pinned)*
+*Last updated: 2026-04-03 — Phase 4 complete: SonoffDaemon integration + Docker packaging. Milestone v1.0 complete — all 4 phases, 8 plans, 33/33 requirements satisfied.*
