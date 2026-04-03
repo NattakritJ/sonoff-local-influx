@@ -130,10 +130,11 @@ Progress: [████████░░] 80%
 | 260403-r2z | commit | 2026-04-03 | 6c172df | [260403-r2z-commit](./quick/260403-r2z-commit/) |
 | 260403-s3b | fix InfluxDB table name — use device_name | 2026-04-03 | 5ef9eaa | [260403-s3b](./quick/260403-s3b-fix-influxdb-table-name-use-device-name-/) |
 | 260403-s9b | trim numeric data to two decimal places | 2026-04-03 | 1ab8025 | [260403-s9b-trim-numeric-data-to-two-decimal-places](./quick/260403-s9b-trim-numeric-data-to-two-decimal-places/) |
+| 260403-u5d | add LOG_LEVEL env var support | 2026-04-03 | 7f4d959 | [260403-u5d-add-loglevel-into-config](./quick/260403-u5d-add-loglevel-into-config/) |
 
 ---
 
 ## Session Continuity
 
-**Stopped at:** Completed quick task 260403-s9b: round power/voltage/current to 2dp in extractor
+**Stopped at:** Completed quick task 260403-u5d: add LOG_LEVEL env var support
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
