@@ -64,7 +64,18 @@
 
 ---
 
-## v2 Requirements (Deferred)
+## v2 Requirements
+
+### Static IP + HTTP Polling Mode
+
+- [ ] **CFG-05**: Each device entry in `SONOFF_DEVICES` accepts an optional `ip` field; when present, mDNS discovery is skipped for that device and the daemon connects directly to the configured IP
+- [ ] **LAN-07**: When a device has a configured `ip`, the daemon polls it via HTTP POST to `http://{ip}:8081/zeroconf/getState` at a fixed interval (configurable via `SONOFF_POLL_INTERVAL` env var, default 10 seconds)
+- [ ] **LAN-08**: The polling interval is configurable per-daemon via `SONOFF_POLL_INTERVAL` env var (integer seconds, default 10); applies to all statically-configured devices
+- [ ] **LAN-09**: Static IP polling and mDNS push modes can coexist in the same daemon — devices with `ip` set use polling; devices without `ip` use mDNS discovery as before
+
+---
+
+## v3 Requirements (Deferred)
 
 - POWR3 LAN energy history polling (`POST /zeroconf/getHoursKwh`) — high complexity, single device model
 - Non-energy data ingestion (switch state, temperature, humidity, motion)
@@ -126,3 +137,7 @@
 | DOC-03 | Phase 4: Integration + Docker | Complete |
 | DOC-04 | Phase 4: Integration + Docker | Complete |
 | DOC-05 | Phase 4: Integration + Docker | Complete |
+| CFG-05 | Phase 5: Static IP + Polling Mode | Pending |
+| LAN-07 | Phase 5: Static IP + Polling Mode | Pending |
+| LAN-08 | Phase 5: Static IP + Polling Mode | Pending |
+| LAN-09 | Phase 5: Static IP + Polling Mode | Pending |

@@ -10,6 +10,7 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
 - [x] **Phase 2: Energy Extraction** - Pure extractor module covering all UIIDs with correct scaling (completed 2026-04-03)
 - [x] **Phase 3: InfluxDB Writer** - Isolated async-safe write layer tested against live InfluxDB 3 Core (completed 2026-04-03)
 - [x] **Phase 4: Integration + Docker** - Wire all components into a deployable daemon image (completed 2026-04-03)
+- [ ] **Phase 5: Static IP + Polling Mode** - Allow devices to be configured with a static IP; poll via HTTP at a fixed interval as an alternative to mDNS push (works on macOS and in Docker on any OS)
 
 ## Phase Details
 
@@ -75,6 +76,18 @@ Plans:
 - [x] 04-01-PLAN.md — Wire extractor + writer into SonoffDaemon; add InfluxDB env var parsing; heartbeat; pin requirements.txt
 - [x] 04-02-PLAN.md — Docker packaging: Dockerfile, docker-compose.yml, .env.example; human-verify checkpoint
 
+### Phase 5: Static IP + Polling Mode
+**Goal**: Devices configured with a static `ip` field bypass mDNS entirely and are polled via HTTP `getState` at a fixed interval — enabling Docker and macOS deployments where mDNS multicast is unavailable
+**Depends on**: Phase 4
+**Requirements**: CFG-05, LAN-07, LAN-08, LAN-09
+**Success Criteria** (what must be TRUE):
+  1. A device with `"ip":"192.168.x.x"` in `SONOFF_DEVICES` is polled via HTTP and writes energy readings without any mDNS involvement
+  2. `SONOFF_POLL_INTERVAL` env var (default 10s) controls the polling cadence; startup log confirms the interval in use
+  3. A device without `ip` continues to use mDNS push as before — both modes coexist in the same daemon instance
+  4. `docker compose up --build` on macOS successfully writes data when devices have static IPs configured
+  5. Polling failures (HTTP timeout, device offline) log a warning and retry on the next interval — daemon never crashes
+**Plans**: TBD (run `/gsd:plan-phase` to generate)
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -83,3 +96,4 @@ Plans:
 | 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
 | 3. InfluxDB Writer | 2/2 | Complete   | 2026-04-03 |
 | 4. Integration + Docker | 2/2 | Complete   | 2026-04-03 |
+| 5. Static IP + Polling Mode | 0/? | Pending    | — |
