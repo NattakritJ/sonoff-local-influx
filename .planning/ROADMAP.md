@@ -53,7 +53,11 @@ Plans:
   2. Each write uses `asyncio.to_thread()` — the event loop is not blocked during write operations
   3. When InfluxDB is unreachable or returns an error, the writer logs the error at ERROR level and returns without raising — the caller is unaffected
   4. Daemon fails fast at startup with a clear error if the InfluxDB connectivity check fails
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — TDD: InfluxWriter class with async write(), check_connectivity(), error handling + 17 unit tests (mocked)
+- [ ] 03-02-PLAN.md — Integration test against live InfluxDB 3 Core; update requirements.txt + pytest.ini
 
 ### Phase 4: Integration + Docker
 **Goal**: All components wired into `SonoffDaemon` with a `__main__.py` entrypoint, packaged as a Docker image with `network_mode: host`, configured entirely by env vars — end-to-end energy events flow from real devices into InfluxDB
