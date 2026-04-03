@@ -7,9 +7,17 @@ that can be written directly to InfluxDB.  No I/O, no logging, no HA imports.
 Supported single-channel UIIDs and their scaling:
 
   ×1 (pass-through):
-    - 32   (POWR2):           power, current, voltage
     - 182  (S40):             power, current, voltage
     - 226  (CK-BL602):        phase_0_p → power, phase_0_c → current, phase_0_v → voltage
+
+  ×1 or ×0.01 (auto-detected per-message for UIID 32):
+    - 32   (POWR2 / POWR3):   power, current, voltage
+      POWR2 / S31 firmware (3.x) sends pre-scaled floats — `"234.53"` V → ×1.
+      POWR3 hardware on the same UIID (firmware 1.2.1) sends raw centi-units —
+      `23455` → ÷100 = 234.55 V.  Detected by checking whether the raw voltage
+      (or any available metric) exceeds 1000 after float conversion: residential
+      voltage is always 100–280 V (pre-scaled) or 10000–28000 (raw cents), so
+      the threshold is unambiguous.
 
   ×0.01:
     - 190  (POWR3 / S60):     power, current, voltage; dayKwh → energy_today
@@ -42,13 +50,21 @@ class EnergyReading:
 
 
 # UIIDs whose raw values are already in final units (×1 pass-through)
-_SCALE_1: frozenset[int] = frozenset({32, 182, 226})
+_SCALE_1: frozenset[int] = frozenset({182, 226})
 
 # UIIDs whose raw values must be divided by 100 (×0.01)
 _SCALE_001: frozenset[int] = frozenset({190, 262, 276, 277, 7032})
 
+# UIID 32 (POWR2 / POWR3) is handled separately: the scale factor is
+# auto-detected per-message because two firmware families share UIID 32:
+#   • POWR2 / S31 (fw 3.x):  pre-scaled floats, e.g. "234.53" V  → ×1
+#   • POWR3 (fw 1.2.1):      raw centi-units,   e.g. 23455      → ÷100
+# Residential voltage is always 100–280 V when pre-scaled, or 10000–28000
+# when in centi-volts, so any raw value > 1000 unambiguously needs ÷100.
+_UIID_32_CENTI_THRESHOLD: float = 1000.0
+
 # All supported single-channel UIIDs
-_SUPPORTED: frozenset[int] = _SCALE_1 | _SCALE_001
+_SUPPORTED: frozenset[int] = _SCALE_1 | _SCALE_001 | frozenset({32})
 
 # UIIDs that carry dayKwh (daily energy total) in params
 _HAS_DAY_KWH: frozenset[int] = frozenset({190, 276, 7032})
@@ -102,7 +118,27 @@ def extract_energy(
     if uiid not in _SUPPORTED:
         return None
 
-    scale: float = 1.0 if uiid in _SCALE_1 else 0.01
+    # UIID 32: auto-detect scale from the first available raw value.
+    # Pre-scaled firmware (POWR2/S31) sends values like "234.53" (≤ 1000 after
+    # float conversion).  POWR3 firmware 1.2.1 sends raw centi-units like 23455
+    # (> 1000).  Check voltage first (most reliable sentinel); fall back to
+    # power, then current.
+    if uiid == 32:
+        _sentinel = (
+            params.get("voltage")
+            if params.get("voltage") is not None
+            else (
+                params.get("power")
+                if params.get("power") is not None
+                else params.get("current")
+            )
+        )
+        if _sentinel is not None and float(_sentinel) > _UIID_32_CENTI_THRESHOLD:
+            scale: float = 0.01
+        else:
+            scale = 1.0
+    else:
+        scale = 1.0 if uiid in _SCALE_1 else 0.01
 
     # Resolve raw param values (UIID 226 uses different key names)
     if uiid == 226:
