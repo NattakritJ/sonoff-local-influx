@@ -2,13 +2,12 @@
 
 Resolved debug sessions. Used by `gsd-debugger` to surface known-pattern hypotheses at the start of new investigations.
 
+## influxdb-connection-refused-not-handled — InfluxDB write prints full traceback instead of single warning on connection refused
+- **Date:** 2026-04-04
+- **Error patterns:** NewConnectionError, ConnectionRefusedError, traceback, InfluxDB, write, urllib3, connection refused, exc_info, writer.py
+- **Root cause:** writer.py already caught network exceptions via `except Exception`, but passed `exc_info=e` to `_LOGGER.error()` which triggers Python logging's full traceback output. `InfluxDBClient3.write()` only wraps `InfluxDBError` (HTTP-level errors); raw urllib3 network exceptions (NewConnectionError → HTTPError → Exception, NOT InfluxDBError) pass through unwrapped and hit our handler which then dumps the stack.
+- **Fix:** Replaced `_LOGGER.error(... exc_info=e)` with `_LOGGER.warning("InfluxDB write failed: %s", e)` — no exc_info, no re-raise. Also updated docstring and test 13 to assert WARNING level with no exc_info.
+- **Files changed:** src/writer.py, tests/test_writer.py
 ---
 
-## docker-no-data-silent — Docker daemon silent after startup on macOS (mDNS multicast not received)
-- **Date:** 2026-04-03
-- **Error patterns:** silent, no data, no logs, docker, mDNS, zeroconf, network_mode host, multicast, macOS, ready
-- **Root cause:** macOS Docker Desktop runs containers inside a Linux VM. `network_mode: host` attaches to the VM's virtual NIC, not the macOS host's physical LAN. mDNS multicast packets (224.0.0.251:5353) from Sonoff devices on the LAN never enter the VM — `AsyncServiceBrowser` starts without error but receives zero events, so no writes ever occur.
-- **Fix:** No code changes needed. Added comment to docker-compose.yml and explicit macOS/Windows warning to README Network requirements section directing users to the local run path. Also fixed all README `SONOFF_DEVICES` examples that were missing the required `uiid` field.
-- **Files changed:** docker-compose.yml, README.md
----
 
