@@ -100,3 +100,23 @@ def parse_influx_config() -> tuple[str, str, str]:
         sys.exit(1)
 
     return host, token, database  # type: ignore[return-value]  # guarded by missing check
+
+
+_VALID_LOG_LEVELS = {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}
+
+
+def parse_log_level() -> int:
+    """Read LOG_LEVEL env var and return the corresponding logging int.
+
+    Valid values (case-insensitive): DEBUG, INFO, WARNING, ERROR, CRITICAL.
+    Defaults to INFO if not set. Calls sys.exit(1) on invalid values.
+    """
+    raw = os.environ.get("LOG_LEVEL", "INFO").upper()
+    if raw not in _VALID_LOG_LEVELS:
+        print(
+            f"ERROR: LOG_LEVEL={raw!r} is not valid.\n"
+            f"  Allowed values: {', '.join(sorted(_VALID_LOG_LEVELS))}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return getattr(logging, raw)

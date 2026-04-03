@@ -7,17 +7,12 @@ import sys
 import aiohttp
 from zeroconf.asyncio import AsyncZeroconf
 
-from config import parse_config, parse_influx_config
+from config import parse_config, parse_influx_config, parse_log_level
 from ewelink import SIGNAL_UPDATE, XRegistryLocal
 from extractor import EnergyReading, extract_energy, extract_energy_multi
 from writer import InfluxWriter
 from config import DeviceConfig
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s %(levelname)s %(name)s: %(message)s",
-    datefmt="%Y-%m-%dT%H:%M:%S",
-)
 _LOGGER = logging.getLogger("sonoff_daemon")
 
 # UIIDs with multiple channels — use extract_energy_multi() for these
@@ -162,6 +157,12 @@ def _load_dotenv() -> None:
 async def main() -> None:
     # Load .env file if present (for local dev — Docker passes vars directly)
     _load_dotenv()
+    log_level = parse_log_level()
+    logging.basicConfig(
+        level=log_level,
+        format="%(asctime)s %(levelname)s %(name)s: %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S",
+    )
     devices = parse_config()
     host, token, database = parse_influx_config()
     writer = InfluxWriter(host, token, database)
