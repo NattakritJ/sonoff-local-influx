@@ -103,7 +103,7 @@ Plans:
 **Goal:** Extend UIID 190 (SONOFF POWCT) energy extraction to capture grid backfeed metrics — sign-encoding `supplyPower`/`supplyCurrent` as negative `power`/`current` values in InfluxDB, and adding a new `energy_backfeed_today` field from `dayPowerSupply` — enabling a single Grafana `power` query to show both consumption (positive) and export (negative)
 **Requirements**: EXT-06
 **Depends on:** Phase 5
-**Plans:** 1 plan
+**Plans:** 1/1 plans complete
 
 Plans:
-- [ ] 06-01-PLAN.md — TDD: extend EnergyReading + extract_energy() UIID 190 backfeed branch + writer.write() energy_backfeed_today field
+- [x] 06-01-PLAN.md — TDD: extend EnergyReading + extract_energy() UIID 190 backfeed branch + writer.write() energy_backfeed_today field

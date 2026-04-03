@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 05
-current_plan: Not started
-status: Phase 5 pending
-stopped_at: Phase 6 context gathered
-last_updated: "2026-04-03T18:26:21.840Z"
+current_phase: 06
+current_plan: 1
+status: verifying
+stopped_at: Completed Phase 06 Plan 01 — UIID 190 backfeed extraction + writer extension
+last_updated: "2026-04-03T18:37:07.177Z"
 progress:
   total_phases: 6
-  completed_phases: 4
-  total_plans: 8
-  completed_plans: 8
+  completed_phases: 5
+  total_plans: 9
+  completed_plans: 9
   percent: 80
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Phase 5 pending
+**Status:** Phase complete — ready for verification
 **Last updated:** 2026-04-03 - Added Phase 5: Static IP + Polling Mode
 
 ---
@@ -33,10 +33,10 @@ progress:
 
 ## Current Position
 
-Phase: 04 (integration-docker) — ✅ COMPLETE
-Plan: 2 of 2
-**Current phase:** 05
-**Current plan:** Not started
+Phase: 06 (add-powct-grid-backfeed-capture-store-daypowersupply-supplycurrent-and-supplypower-as-negative-current-and-power-fields-in-influxdb-for-uiid-190-devices) — EXECUTING
+Plan: 1 of 1
+**Current phase:** 06
+**Current plan:** 1
 **Phase status:** Pending — run `/gsd:plan-phase` to begin
 
 ```
@@ -78,6 +78,7 @@ Progress: [████████░░] 80%
 
 ---
 | Phase 04 P02 | 5min | 3 tasks | 3 files |
+| Phase 06 P01 | 5min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,9 @@ Progress: [████████░░] 80%
 - **[Phase 4 P02]** python -u (unbuffered) in Dockerfile CMD ensures immediate log output in docker logs without buffering delay
 - **[Phase 4 P02]** env_file: .env in docker-compose — secrets stay outside the image; user copies .env.example to .env
 - **[Phase 4 P02]** Log rotation (10m/3 files) in docker-compose — prevents disk fill on long-running daemon
+- **[Phase 6 P01]** D-04/D-05: sign-encoding backfeed in existing power/current fields — no new supply_power field; supplyPower=5000 → power=-50.0
+- **[Phase 6 P01]** D-13: both-zero case for UIID 190 returns EnergyReading(power=0.0, current=0.0) explicitly — never None (only exception to "return None if no energy" rule)
+- **[Phase 6 P01]** UIID 190 dayKwh handled inline in new backfeed branch — independent of _HAS_DAY_KWH general path (190 removed from that path effectively)
 
 ### Critical Pitfalls to Watch
 
@@ -140,5 +144,5 @@ Progress: [████████░░] 80%
 
 ## Session Continuity
 
-**Stopped at:** Phase 6 context gathered
+**Stopped at:** Completed Phase 06 Plan 01 — UIID 190 backfeed extraction + writer extension
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
