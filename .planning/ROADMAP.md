@@ -69,7 +69,11 @@ Plans:
   3. A heartbeat log line appears every 60 seconds reporting the write counter
   4. `docker stop` sends SIGTERM; the container exits cleanly within 10 seconds
   5. `.env.example` documents every required and optional env var; `requirements.txt` has all dependencies pinned
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — Wire extractor + writer into SonoffDaemon; add InfluxDB env var parsing; heartbeat; pin requirements.txt
+- [ ] 04-02-PLAN.md — Docker packaging: Dockerfile, docker-compose.yml, .env.example; human-verify checkpoint
 
 ## Progress
 
@@ -78,4 +82,4 @@ Plans:
 | 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
 | 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
 | 3. InfluxDB Writer | 2/2 | Complete   | 2026-04-03 |
-| 4. Integration + Docker | 0/TBD | Not started | - |
+| 4. Integration + Docker | 0/2 | Not started | - |
