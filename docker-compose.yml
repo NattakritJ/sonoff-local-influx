@@ -3,6 +3,11 @@ services:
     build: .
     image: sonoffd:latest
     restart: unless-stopped
+    # network_mode: host is REQUIRED on Linux for mDNS/zeroconf multicast to work.
+    # macOS / Windows Docker Desktop: host networking does NOT forward multicast UDP
+    # into the container — the daemon will start but receive no mDNS events and write
+    # nothing. On macOS/Windows, run the daemon locally (without Docker) instead:
+    #   python src/__main__.py
     network_mode: host
     env_file: .env
     logging:
