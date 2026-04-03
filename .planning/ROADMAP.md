@@ -23,7 +23,11 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
   3. Configured Sonoff devices appear in the log as discovered within 10 seconds of startup; unconfigured devices produce no log output
   4. Encrypted (non-DIY) and plain-JSON (DIY) device payloads are both decoded and logged correctly; protocol is auto-detected per device
   5. Daemon exits cleanly within 10 seconds on SIGTERM or SIGINT
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Extract clean `src/ewelink/` package from HA codebase; add `requirements.txt`
+- [ ] 01-02-PLAN.md — Config loading, async daemon entrypoint, mDNS wiring, SIGTERM shutdown
 
 ### Phase 2: Energy Extraction
 **Goal**: A pure-function extractor module that converts raw Sonoff device params into typed `EnergyReading` values with correct per-UIID scaling — fully unit-testable with no I/O
