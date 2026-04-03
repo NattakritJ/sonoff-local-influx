@@ -1,0 +1,12 @@
+services:
+  sonoff-daemon:
+    build: .
+    image: sonoffd:latest
+    restart: unless-stopped
+    network_mode: host
+    env_file: .env
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
