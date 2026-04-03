@@ -1,7 +1,7 @@
 """
-TDD tests for src/extractor.py — EnergyReading dataclass + extract_energy() function.
+TDD tests for src/extractor.py — EnergyReading dataclass + extract_energy() / extract_energy_multi() functions.
 
-Covers all single-channel UIIDs:
+Covers all single-channel UIIDs (Plan 01):
   - UIID 32  (POWR2):          power/current/voltage ×1
   - UIID 182 (S40):            power/current/voltage ×1
   - UIID 190 (POWR3/S60):      power/current/voltage ×0.01, dayKwh → energy_today ×0.01
@@ -10,6 +10,10 @@ Covers all single-channel UIIDs:
   - UIID 276 (S61STPF):        power/current/voltage ×0.01, dayKwh → energy_today ×0.01
   - UIID 277 (XMiniDim):       power/current/voltage ×0.01
   - UIID 7032 (S60ZBTPF):      power/current/voltage ×0.01, dayKwh → energy_today ×0.01
+
+And multi-channel UIIDs (Plan 02):
+  - UIID 126 (DualR3):         actPow_00/01, current_00/01, voltage_00/01 ×0.01 — 2 channels
+  - UIID 130 (SPM-4Relay):     actPow_00..03, current_00..03, voltage_00..03 ×0.01 — 4 channels
 """
 import pytest
 import sys
@@ -18,7 +22,7 @@ import os
 # Ensure src/ is on path so `from extractor import ...` works
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
-from extractor import EnergyReading, extract_energy  # noqa: E402
+from extractor import EnergyReading, extract_energy, extract_energy_multi  # noqa: E402
 
 
 # ---------------------------------------------------------------------------
@@ -247,3 +251,145 @@ def test_plan_success_criteria_example():
     assert result.voltage == pytest.approx(220.0)
     assert result.energy_today is None
     assert result.channel is None
+
+
+# ===========================================================================
+# Plan 02-02: Multi-channel UIIDs — extract_energy_multi()
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Test 14: DualR3 (UIID 126) with both channels present → list of 2 EnergyReadings
+# ---------------------------------------------------------------------------
+def test_dualr3_both_channels_returns_two_readings():
+    params = {
+        "actPow_00": 2300, "current_00": 500, "voltage_00": 22000,
+        "actPow_01": 1150, "current_01": 250, "voltage_01": 21950,
+    }
+    result = extract_energy_multi("dev14", 126, params)
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert result[0].channel == 1
+    assert result[1].channel == 2
+
+
+# ---------------------------------------------------------------------------
+# Test 15: DualR3 channel 1 values — actPow_00=2300 → power=23.0, etc.
+# ---------------------------------------------------------------------------
+def test_dualr3_channel_1_values():
+    params = {
+        "actPow_00": 2300, "current_00": 500, "voltage_00": 22000,
+        "actPow_01": 1150, "current_01": 250, "voltage_01": 21950,
+    }
+    result = extract_energy_multi("dev15", 126, params)
+    ch1 = result[0]
+    assert isinstance(ch1, EnergyReading)
+    assert ch1.device_id == "dev15"
+    assert ch1.uiid == 126
+    assert ch1.channel == 1
+    assert ch1.power == pytest.approx(23.0)
+    assert ch1.current == pytest.approx(5.0)
+    assert ch1.voltage == pytest.approx(220.0)
+    assert ch1.energy_today is None
+
+
+# ---------------------------------------------------------------------------
+# Test 16: DualR3 channel 2 values — actPow_01=1150 → power=11.5, etc.
+# ---------------------------------------------------------------------------
+def test_dualr3_channel_2_values():
+    params = {
+        "actPow_00": 2300, "current_00": 500, "voltage_00": 22000,
+        "actPow_01": 1150, "current_01": 250, "voltage_01": 21950,
+    }
+    result = extract_energy_multi("dev16", 126, params)
+    ch2 = result[1]
+    assert isinstance(ch2, EnergyReading)
+    assert ch2.channel == 2
+    assert ch2.power == pytest.approx(11.5)
+    assert ch2.current == pytest.approx(2.5)
+    assert ch2.voltage == pytest.approx(219.5)
+    assert ch2.energy_today is None
+
+
+# ---------------------------------------------------------------------------
+# Test 17: DualR3 with only channel 1 params → list of 1 EnergyReading (channel=1)
+# ---------------------------------------------------------------------------
+def test_dualr3_only_channel_1_present():
+    params = {"actPow_00": 2300, "current_00": 500, "voltage_00": 22000}
+    result = extract_energy_multi("dev17", 126, params)
+    assert len(result) == 1
+    assert result[0].channel == 1
+
+
+# ---------------------------------------------------------------------------
+# Test 18: DualR3 with no energy params at all → empty list
+# ---------------------------------------------------------------------------
+def test_dualr3_no_energy_params_returns_empty_list():
+    result = extract_energy_multi("dev18", 126, {})
+    assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Test 19: SPM-4Relay (UIID 130) with all 4 channels → list of 4 EnergyReadings, channels 1-4
+# ---------------------------------------------------------------------------
+def test_spm4relay_all_four_channels():
+    params = {
+        "actPow_00": 1000, "current_00": 100, "voltage_00": 22000,
+        "actPow_01": 2000, "current_01": 200, "voltage_01": 22100,
+        "actPow_02": 3000, "current_02": 300, "voltage_02": 22200,
+        "actPow_03": 4000, "current_03": 400, "voltage_03": 22300,
+    }
+    result = extract_energy_multi("dev19", 130, params)
+    assert isinstance(result, list)
+    assert len(result) == 4
+    channels = [r.channel for r in result]
+    assert channels == [1, 2, 3, 4]
+
+
+# ---------------------------------------------------------------------------
+# Test 20: SPM-4Relay with channels 1 and 3 present (2 and 4 absent) → 2 EnergyReadings
+# ---------------------------------------------------------------------------
+def test_spm4relay_partial_channels_1_and_3():
+    params = {
+        "actPow_00": 1000, "current_00": 100, "voltage_00": 22000,
+        "actPow_02": 3000, "current_02": 300, "voltage_02": 22200,
+    }
+    result = extract_energy_multi("dev20", 130, params)
+    assert len(result) == 2
+    assert result[0].channel == 1
+    assert result[1].channel == 3
+
+
+# ---------------------------------------------------------------------------
+# Test 21: String raw values on DualR3 → float output (type coercion)
+# ---------------------------------------------------------------------------
+def test_dualr3_string_raw_values_coerced_to_float():
+    params = {
+        "actPow_00": "2300", "current_00": "500", "voltage_00": "22000",
+        "actPow_01": "1150", "current_01": "250", "voltage_01": "21950",
+    }
+    result = extract_energy_multi("dev21", 126, params)
+    assert len(result) == 2
+    assert isinstance(result[0].power, float)
+    assert result[0].power == pytest.approx(23.0)
+    assert isinstance(result[1].current, float)
+    assert result[1].current == pytest.approx(2.5)
+
+
+# ---------------------------------------------------------------------------
+# Test 22: Unsupported UIID → returns empty list (not an error)
+# ---------------------------------------------------------------------------
+def test_unsupported_uiid_returns_empty_list():
+    result = extract_energy_multi("dev22", 999, {"actPow_00": 1000})
+    assert result == []
+
+
+# ---------------------------------------------------------------------------
+# Test 23: All Plan 01 tests still pass (no regression) — verified by import
+# ---------------------------------------------------------------------------
+def test_plan_01_exports_still_available():
+    """Verify extract_energy and EnergyReading are still importable alongside extract_energy_multi."""
+    from extractor import EnergyReading as ER, extract_energy as ee, extract_energy_multi as eem  # noqa: F401
+    r = ee("reg_check", 32, {"power": 100, "current": 10, "voltage": 230})
+    assert isinstance(r, ER)
+    assert r.power == pytest.approx(100.0)
+    assert r.channel is None
