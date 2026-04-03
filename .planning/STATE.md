@@ -4,21 +4,21 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 04
 current_plan: 2
-status: executing
-stopped_at: Completed 04-01-PLAN.md
-last_updated: "2026-04-03T11:58:37.053Z"
+status: completed
+stopped_at: Completed 04-02-PLAN.md — ALL PLANS COMPLETE
+last_updated: "2026-04-03T12:08:48.005Z"
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 8
-  completed_plans: 7
+  completed_plans: 8
   percent: 100
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Ready to execute
+**Status:** ✅ ALL PLANS COMPLETE — milestone v1.0 ready
 **Last updated:** 2026-04-03
 
 ---
@@ -33,16 +33,16 @@ progress:
 
 ## Current Position
 
-Phase: 04 (integration-docker) — EXECUTING
+Phase: 04 (integration-docker) — ✅ COMPLETE
 Plan: 2 of 2
 **Current phase:** 04
-**Current plan:** 1
+**Current plan:** 2
 **Phase status:** Complete
 
 ```
-Progress: [█████████░] 88%
+Progress: [██████████] 100%
                         ▲
-                     CURRENT
+                     COMPLETE
 ```
 
 ---
@@ -54,7 +54,7 @@ Progress: [█████████░] 88%
 | 1 | LAN Transport Foundation | ✅ Complete |
 | 2 | Energy Extraction | ✅ Complete (2/2 plans done) |
 | 3 | InfluxDB Writer | ✅ Complete (2/2 plans done) |
-| 4 | Integration + Docker | Pending |
+| 4 | Integration + Docker | ✅ Complete (2/2 plans done) |
 
 ---
 
@@ -69,12 +69,14 @@ Progress: [█████████░] 88%
 | 03 | 01 | 2 min | 2 | 3 | 2026-04-03 |
 | 03 | 02 | 15 min | 2 | 3 | 2026-04-03 |
 | 04 | 01 | 2 min | 3 | 3 | 2026-04-03 |
+| 04 | 02 | 5 min | 3 | 3 | 2026-04-03 |
 
-- Plans completed: 7
-- Phases completed: 3
-- Requirements satisfied: 28 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, OPS-03, OPS-04, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06)
+- Plans completed: 8
+- Phases completed: 4
+- Requirements satisfied: 33 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, OPS-03, OPS-04, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06, DOC-01, DOC-02, DOC-03, DOC-04, DOC-05)
 
 ---
+| Phase 04 P02 | 5min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -100,13 +102,17 @@ Progress: [█████████░] 88%
 - **[Phase 4 P01]** asyncio.ensure_future() used in sync _on_update() to schedule async _write_reading() without blocking mDNS callback
 - **[Phase 4 P01]** frozenset({126, 130}) as _MULTI_CHANNEL_UIIDS constant for O(1) UIID routing in _on_update()
 - **[Phase 4 P01]** writer.write() never raises — success log placed unconditionally after await in _write_reading()
+- **[Phase 4 P02]** python:3.12-slim-bookworm (not Alpine) — cryptography and pyarrow require pre-built wheels unavailable on Alpine musl libc
+- **[Phase 4 P02]** python -u (unbuffered) in Dockerfile CMD ensures immediate log output in docker logs without buffering delay
+- **[Phase 4 P02]** env_file: .env in docker-compose — secrets stay outside the image; user copies .env.example to .env
+- **[Phase 4 P02]** Log rotation (10m/3 files) in docker-compose — prevents disk fill on long-running daemon
 
 ### Critical Pitfalls to Watch
 
 1. ~~**Phase 1:** Verify no residual `homeassistant` imports survive in `base.py`/`local.py`~~ ✅ RESOLVED — zero HA imports confirmed
 2. ~~**Phase 1:** `zeroconf.async_get_instance(hass)` call in `local.py`~~ ✅ RESOLVED — AsyncZeroconf used directly
 3. ~~**Phase 3:** Confirm exact importable exception class from `influxdb_client_3` for the `try/except` in writer~~ ✅ RESOLVED — `InfluxDBError` importable from `influxdb_client_3` top-level; class name is `InfluxDBClient3` not `InfluxDB3Client`
-4. **Phase 4:** Confirm `docker stop` triggers SIGTERM to PID 1 correctly — verify <10s exit
+4. ~~**Phase 4:** Confirm `docker stop` triggers SIGTERM to PID 1 correctly — verify <10s exit~~ ✅ RESOLVED — exec-form CMD confirmed; container exits cleanly on docker stop
 
 ### Todos
 
@@ -120,5 +126,5 @@ Progress: [█████████░] 88%
 
 ## Session Continuity
 
-**Stopped at:** Completed 04-01-PLAN.md
-**To resume:** Phase 4 in progress. Next: Phase 4 Plan 02 — Docker packaging. Run `/gsd-execute-phase 4` to continue.
+**Stopped at:** Completed 04-02-PLAN.md — ALL PLANS COMPLETE
+**To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.

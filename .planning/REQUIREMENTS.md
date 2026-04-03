@@ -50,11 +50,11 @@
 
 ### Docker Packaging
 
-- [ ] **DOC-01**: Daemon is packaged as a Docker image based on `python:3.12-slim-bookworm`
-- [ ] **DOC-02**: Docker image is configured via environment variables only
-- [ ] **DOC-03**: `docker-compose.yml` uses `network_mode: host` to enable mDNS multicast (Linux production)
-- [ ] **DOC-04**: Repository includes `.env.example` documenting all required and optional env vars
-- [ ] **DOC-05**: Repository includes pinned `requirements.txt` with all dependencies
+- [x] **DOC-01**: Daemon is packaged as a Docker image based on `python:3.12-slim-bookworm`
+- [x] **DOC-02**: Docker image is configured via environment variables only
+- [x] **DOC-03**: `docker-compose.yml` uses `network_mode: host` to enable mDNS multicast (Linux production)
+- [x] **DOC-04**: Repository includes `.env.example` documenting all required and optional env vars
+- [x] **DOC-05**: Repository includes pinned `requirements.txt` with all dependencies
 
 ### Codebase Migration
 
@@ -121,8 +121,8 @@
 | CFG-04 | Phase 3: InfluxDB Writer | Complete |
 | OPS-03 | Phase 4: Integration + Docker | Complete |
 | OPS-04 | Phase 4: Integration + Docker | Complete |
-| DOC-01 | Phase 4: Integration + Docker | Pending |
-| DOC-02 | Phase 4: Integration + Docker | Pending |
-| DOC-03 | Phase 4: Integration + Docker | Pending |
-| DOC-04 | Phase 4: Integration + Docker | Pending |
-| DOC-05 | Phase 4: Integration + Docker | Pending |
+| DOC-01 | Phase 4: Integration + Docker | Complete |
+| DOC-02 | Phase 4: Integration + Docker | Complete |
+| DOC-03 | Phase 4: Integration + Docker | Complete |
+| DOC-04 | Phase 4: Integration + Docker | Complete |
+| DOC-05 | Phase 4: Integration + Docker | Complete |
