@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 04
+current_phase: 05
 current_plan: Not started
-status: completed
-stopped_at: Completed 04-02-PLAN.md — ALL PLANS COMPLETE
-last_updated: "2026-04-03T12:13:21.308Z"
+status: Phase 5 pending
+stopped_at: Phase 6 context gathered
+last_updated: "2026-04-03T18:26:21.840Z"
 progress:
-  total_phases: 5
+  total_phases: 6
   completed_phases: 4
   total_plans: 8
   completed_plans: 8
@@ -115,6 +115,10 @@ Progress: [████████░░] 80%
 3. ~~**Phase 3:** Confirm exact importable exception class from `influxdb_client_3` for the `try/except` in writer~~ ✅ RESOLVED — `InfluxDBError` importable from `influxdb_client_3` top-level; class name is `InfluxDBClient3` not `InfluxDB3Client`
 4. ~~**Phase 4:** Confirm `docker stop` triggers SIGTERM to PID 1 correctly — verify <10s exit~~ ✅ RESOLVED — exec-form CMD confirmed; container exits cleanly on docker stop
 
+### Roadmap Evolution
+
+- Phase 6 added: Add POWCT grid backfeed capture: store dayPowerSupply, supplyCurrent and supplyPower as negative current and power fields in InfluxDB for uiid 190 devices
+
 ### Todos
 
 - None yet
@@ -136,5 +140,5 @@ Progress: [████████░░] 80%
 
 ## Session Continuity
 
-**Stopped at:** Completed quick task 260403-u5d: add LOG_LEVEL env var support
+**Stopped at:** Phase 6 context gathered
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
