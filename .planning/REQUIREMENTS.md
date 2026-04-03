@@ -91,12 +91,38 @@
 
 ## Traceability
 
-| REQ-ID | Phase | Notes |
-|--------|-------|-------|
-| LAN-01 – LAN-06 | Phase 1: LAN Transport | |
-| EXT-01 – EXT-05 | Phase 2: Energy Extraction | |
-| INF-01 – INF-06 | Phase 3: InfluxDB Writer | |
-| CFG-01 – CFG-04 | Phase 1 (CFG-01–03), Phase 3 (CFG-04) | |
-| OPS-01 – OPS-04 | Phase 1 (OPS-01–02), Phase 4 Integration (OPS-03–04) | |
-| DOC-01 – DOC-05 | Phase 4: Docker Packaging | |
-| MIG-01 – MIG-03 | Phase 1: LAN Transport | |
+| REQ-ID | Phase | Status |
+|--------|-------|--------|
+| MIG-01 | Phase 1: LAN Transport Foundation | Pending |
+| MIG-02 | Phase 1: LAN Transport Foundation | Pending |
+| MIG-03 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-01 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-02 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-03 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-04 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-05 | Phase 1: LAN Transport Foundation | Pending |
+| LAN-06 | Phase 1: LAN Transport Foundation | Pending |
+| CFG-01 | Phase 1: LAN Transport Foundation | Pending |
+| CFG-02 | Phase 1: LAN Transport Foundation | Pending |
+| CFG-03 | Phase 1: LAN Transport Foundation | Pending |
+| OPS-01 | Phase 1: LAN Transport Foundation | Pending |
+| OPS-02 | Phase 1: LAN Transport Foundation | Pending |
+| EXT-01 | Phase 2: Energy Extraction | Pending |
+| EXT-02 | Phase 2: Energy Extraction | Pending |
+| EXT-03 | Phase 2: Energy Extraction | Pending |
+| EXT-04 | Phase 2: Energy Extraction | Pending |
+| EXT-05 | Phase 2: Energy Extraction | Pending |
+| INF-01 | Phase 3: InfluxDB Writer | Pending |
+| INF-02 | Phase 3: InfluxDB Writer | Pending |
+| INF-03 | Phase 3: InfluxDB Writer | Pending |
+| INF-04 | Phase 3: InfluxDB Writer | Pending |
+| INF-05 | Phase 3: InfluxDB Writer | Pending |
+| INF-06 | Phase 3: InfluxDB Writer | Pending |
+| CFG-04 | Phase 3: InfluxDB Writer | Pending |
+| OPS-03 | Phase 4: Integration + Docker | Pending |
+| OPS-04 | Phase 4: Integration + Docker | Pending |
+| DOC-01 | Phase 4: Integration + Docker | Pending |
+| DOC-02 | Phase 4: Integration + Docker | Pending |
+| DOC-03 | Phase 4: Integration + Docker | Pending |
+| DOC-04 | Phase 4: Integration + Docker | Pending |
+| DOC-05 | Phase 4: Integration + Docker | Pending |
