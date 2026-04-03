@@ -8,7 +8,7 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
 
 - [x] **Phase 1: LAN Transport Foundation** - Strip HA code, validate standalone mDNS + AES decrypt works clean (completed 2026-04-03)
 - [x] **Phase 2: Energy Extraction** - Pure extractor module covering all UIIDs with correct scaling (completed 2026-04-03)
-- [ ] **Phase 3: InfluxDB Writer** - Isolated async-safe write layer tested against live InfluxDB 3 Core
+- [x] **Phase 3: InfluxDB Writer** - Isolated async-safe write layer tested against live InfluxDB 3 Core (completed 2026-04-03)
 - [ ] **Phase 4: Integration + Docker** - Wire all components into a deployable daemon image
 
 ## Phase Details
@@ -57,7 +57,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md — TDD: InfluxWriter class with async write(), check_connectivity(), error handling + 17 unit tests (mocked)
-- [ ] 03-02-PLAN.md — Integration test against live InfluxDB 3 Core; update requirements.txt + pytest.ini
+- [x] 03-02-PLAN.md — Integration test against live InfluxDB 3 Core; update requirements.txt + pytest.ini
 
 ### Phase 4: Integration + Docker
 **Goal**: All components wired into `SonoffDaemon` with a `__main__.py` entrypoint, packaged as a Docker image with `network_mode: host`, configured entirely by env vars — end-to-end energy events flow from real devices into InfluxDB
@@ -77,5 +77,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
 | 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
-| 3. InfluxDB Writer | 1/2 | In Progress|  |
+| 3. InfluxDB Writer | 2/2 | Complete   | 2026-04-03 |
 | 4. Integration + Docker | 0/TBD | Not started | - |

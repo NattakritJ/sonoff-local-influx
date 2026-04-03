@@ -4,21 +4,21 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 03
 current_plan: 1
-status: executing
-stopped_at: Completed 03-01-PLAN.md
-last_updated: "2026-04-03T10:56:19.227Z"
+status: verifying
+stopped_at: Completed 03-02-PLAN.md
+last_updated: "2026-04-03T11:20:16.037Z"
 progress:
   total_phases: 4
-  completed_phases: 2
+  completed_phases: 3
   total_plans: 6
-  completed_plans: 5
+  completed_plans: 6
   percent: 100
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Ready to execute
+**Status:** Phase complete — ready for verification
 **Last updated:** 2026-04-03
 
 ---
@@ -53,7 +53,7 @@ Progress: [██████████] 100%
 |---|-------|--------|
 | 1 | LAN Transport Foundation | ✅ Complete |
 | 2 | Energy Extraction | ✅ Complete (2/2 plans done) |
-| 3 | InfluxDB Writer | 🔄 In Progress (1/2 plans done) |
+| 3 | InfluxDB Writer | ✅ Complete (2/2 plans done) |
 | 4 | Integration + Docker | Pending |
 
 ---
@@ -67,9 +67,10 @@ Progress: [██████████] 100%
 | 02 | 01 | 5 min | 1 | 6 | 2026-04-03 |
 | 02 | 02 | 4 min | 2 | 2 | 2026-04-03 |
 | 03 | 01 | 2 min | 2 | 3 | 2026-04-03 |
+| 03 | 02 | 15 min | 2 | 3 | 2026-04-03 |
 
-- Plans completed: 5
-- Phases completed: 2
+- Plans completed: 6
+- Phases completed: 3
 - Requirements satisfied: 26 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06)
 
 ---
@@ -93,6 +94,8 @@ Progress: [██████████] 100%
 - **[Phase 3 P01]** InfluxDBClient3 is the correct class name in influxdb3-python 0.18.0 (plan had typo InfluxDB3Client)
 - **[Phase 3 P01]** asyncio.to_thread() wraps all synchronous InfluxDB3 client calls (write + get_server_version)
 - **[Phase 3 P01]** Empty points (all fields None) skip client.write() entirely — no partial writes to InfluxDB
+- **[Phase 3 P02]** column() used instead of to_pydict() on PyArrow query results — to_pydict() crashes with nanosecond timestamp columns in pyarrow ≥14
+- **[Phase 3 P02]** Integration tests auto-skip when INFLUX_HOST unset via pytestmark skipif — no CI config changes needed
 
 ### Critical Pitfalls to Watch
 
@@ -113,5 +116,5 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-**Stopped at:** Completed 03-01-PLAN.md
+**Stopped at:** Completed 03-02-PLAN.md
 **To resume:** Phase 2 complete. Next: Phase 3 — InfluxDB Writer. Run `/gsd-execute-phase 3` to continue.
