@@ -19,10 +19,10 @@
 
 ### Energy Extraction
 
-- [ ] **EXT-01**: Daemon extracts `power` (Watts), `voltage` (Volts), and `current` (Amperes) from device params for all supported UIIDs
-- [ ] **EXT-02**: Daemon extracts `energy_today` (kWh) from devices that push daily accumulator params (`dayKwh`)
-- [ ] **EXT-03**: Daemon applies correct per-UIID scaling: POWR2/S40 (UIIDs 32, 182) pass through ×1; POWR3/S61/DualR3/SPM variants (UIIDs 126, 130, 190, 226, 262, 276, 277, 7032) multiply by 0.01
-- [ ] **EXT-04**: Daemon coerces all extracted metric values to `float` before writing to prevent InfluxDB field type conflicts
+- [x] **EXT-01**: Daemon extracts `power` (Watts), `voltage` (Volts), and `current` (Amperes) from device params for all supported UIIDs
+- [x] **EXT-02**: Daemon extracts `energy_today` (kWh) from devices that push daily accumulator params (`dayKwh`)
+- [x] **EXT-03**: Daemon applies correct per-UIID scaling: POWR2/S40 (UIIDs 32, 182) pass through ×1; POWR3/S61/DualR3/SPM variants (UIIDs 126, 130, 190, 226, 262, 276, 277, 7032) multiply by 0.01
+- [x] **EXT-04**: Daemon coerces all extracted metric values to `float` before writing to prevent InfluxDB field type conflicts
 - [ ] **EXT-05**: Daemon tags multi-channel devices (DualR3, SPM-4Relay) with a `channel` tag per reading
 
 ### InfluxDB Writer
@@ -107,10 +107,10 @@
 | CFG-03 | Phase 1: LAN Transport Foundation | Complete |
 | OPS-01 | Phase 1: LAN Transport Foundation | Complete |
 | OPS-02 | Phase 1: LAN Transport Foundation | Complete |
-| EXT-01 | Phase 2: Energy Extraction | Pending |
-| EXT-02 | Phase 2: Energy Extraction | Pending |
-| EXT-03 | Phase 2: Energy Extraction | Pending |
-| EXT-04 | Phase 2: Energy Extraction | Pending |
+| EXT-01 | Phase 2: Energy Extraction | Complete |
+| EXT-02 | Phase 2: Energy Extraction | Complete |
+| EXT-03 | Phase 2: Energy Extraction | Complete |
+| EXT-04 | Phase 2: Energy Extraction | Complete |
 | EXT-05 | Phase 2: Energy Extraction | Pending |
 | INF-01 | Phase 3: InfluxDB Writer | Pending |
 | INF-02 | Phase 3: InfluxDB Writer | Pending |

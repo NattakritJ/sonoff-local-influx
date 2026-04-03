@@ -41,7 +41,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — EnergyReading dataclass + extract_energy() for all single-channel UIIDs (32, 182, 190, 226, 262, 276, 277, 7032) with per-UIID scaling + type coercion
+- [x] 02-01-PLAN.md — EnergyReading dataclass + extract_energy() for all single-channel UIIDs (32, 182, 190, 226, 262, 276, 277, 7032) with per-UIID scaling + type coercion
 - [ ] 02-02-PLAN.md — extract_energy_multi() for multi-channel DualR3 (UIID 126) and SPM-4Relay (UIID 130) with channel tag
 
 ### Phase 3: InfluxDB Writer

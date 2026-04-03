@@ -2,22 +2,22 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: Phase 1 — LAN Transport Foundation
-current_plan: Phase 1 complete (01-01, 01-02)
-status: in-progress
-last_updated: "2026-04-03T08:35:00Z"
+current_phase: 02
+current_plan: 2
+status: executing
+last_updated: "2026-04-03T09:07:21.417Z"
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 100
+  total_plans: 4
+  completed_plans: 3
+  percent: 75
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Planning complete — ready to execute
+**Status:** Executing Phase 02
 **Last updated:** 2026-04-03
 
 ---
@@ -32,12 +32,14 @@ progress:
 
 ## Current Position
 
-**Current phase:** Phase 1 — LAN Transport Foundation ✅ COMPLETE
-**Current plan:** Phase 1 complete — 2/2 plans executed
-**Phase status:** Complete
+Phase: 02 (energy-extraction) — EXECUTING
+Plan: 2 of 2
+**Current phase:** 02
+**Current plan:** 2
+**Phase status:** In Progress
 
 ```
-Progress: [██████████] 100%
+Progress: [████████░░] 75%
               ▲
            CURRENT
 ```
@@ -49,7 +51,7 @@ Progress: [██████████] 100%
 | # | Phase | Status |
 |---|-------|--------|
 | 1 | LAN Transport Foundation | ✅ Complete |
-| 2 | Energy Extraction | Pending |
+| 2 | Energy Extraction | 🔄 In Progress (1/2 plans done) |
 | 3 | InfluxDB Writer | Pending |
 | 4 | Integration + Docker | Pending |
 
@@ -61,10 +63,11 @@ Progress: [██████████] 100%
 |-------|------|----------|-------|-------|-----------|
 | 01 | 01 | 8 min | 2 | 4 | 2026-04-03 |
 | 01 | 02 | 5 min | 2 | 2 | 2026-04-03 |
+| 02 | 01 | 5 min | 1 | 6 | 2026-04-03 |
 
-- Plans completed: 2
+- Plans completed: 3
 - Phases completed: 1
-- Requirements satisfied: 14 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, OPS-01, OPS-02)
+- Requirements satisfied: 18 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, OPS-01, OPS-02, EXT-01, EXT-02, EXT-03, EXT-04)
 
 ---
 
@@ -79,6 +82,8 @@ Progress: [██████████] 100%
 - `python:3.12-slim-bookworm` base image (not Alpine — `cryptography` + `pyarrow` need pre-built wheels)
 - **[Phase 1]** base.py and local.py copied verbatim — both confirmed already free of HA imports
 - **[Phase 1]** AsyncZeroconf owns zeroconf instance — no HA hass reference required in standalone daemon
+- **[Phase 2 P01]** EnergyReading is @dataclass; extract_energy() pure function with per-UIID scale factors (×1 or ×0.01); returns None on unrecognised UIIDs or empty params
+- **[Phase 2 P01]** tests/__init__.py wrapped with try/except — HA integration tests coexist with daemon tests without requiring homeassistant installed
 
 ### Critical Pitfalls to Watch
 
@@ -99,4 +104,4 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-**To resume:** Phase 1 complete. Read `.planning/ROADMAP.md` for phase goals. Next: Phase 2 — Energy Extraction. Run `/gsd-execute-phase 2` to continue.
+**To resume:** Phase 2 Plan 1 complete. Next: Phase 2 Plan 2 — multi-channel UIIDs (DualR3/SPM). Run `/gsd-execute-phase 2` to continue.
