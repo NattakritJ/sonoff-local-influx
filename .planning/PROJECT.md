@@ -26,13 +26,23 @@ Reliable, low-latency energy data from Sonoff LAN devices flowing into InfluxDB 
 - ✓ Zero HA/ewelink imports in extractor — fully standalone pure-function module
 - ✓ 28-test TDD suite covering all UIIDs, edge cases, and type coercion
 
+### Validated in Phase 3: InfluxDB Writer
+
+- ✓ `InfluxWriter` class with async `write()` and `check_connectivity()` — never blocks event loop
+- ✓ `asyncio.to_thread()` wraps all synchronous `InfluxDBClient3` calls (INF-05)
+- ✓ Point schema: measurement=device_id, tags={device_id, device_name}, fields={power, voltage, current, energy_today} (INF-01, INF-02, INF-03)
+- ✓ None field values omitted from Point — no null writes (INF-04)
+- ✓ Log-and-continue error handling: exceptions caught, logged at ERROR, never propagated (INF-06)
+- ✓ `check_connectivity()` raises `RuntimeError("InfluxDB unreachable...")` on failure
+- ✓ `influxdb3-python==0.18.0` pinned in requirements.txt (CFG-04)
+- ✓ Integration test suite with auto-skip when `INFLUX_HOST` unset — CI-safe
+- ✓ 18-test TDD unit suite + 4 integration tests verified against live InfluxDB 3 Core
+
 ### Active
 
 - [ ] Standalone daemon entrypoint (no HA) — strips all HA lifecycle code
 - [ ] Docker image with env var configuration (InfluxDB URL, token, bucket; device list)
-- [ ] InfluxDB 3 Core writer using influxdb3-python client
-- [ ] Per-device InfluxDB measurements (measurement name = device_id or device_name)
-- [ ] Write on every LAN energy event (no batching)
+- [ ] Wire LAN transport → energy extractor → InfluxWriter into main event loop
 - [ ] Configurable device list (specific device IDs/IPs — no auto-discover)
 - [ ] Support both encrypted and plain LAN protocols (auto-detect per device)
 - [ ] Structured logging with log-and-continue on InfluxDB write failure
@@ -85,8 +95,8 @@ The HA entity layer (`__init__.py`, all platform files, `config_flow.py`, `entit
 |----------|-----------|---------|
 | Reuse `core/ewelink/local.py` LAN transport | Core protocol work already done and tested | — Pending |
 | Strip all HA code rather than wrapping it | Avoid HA import chain; reduces dependencies by ~15 packages | — Pending |
-| `influxdb3-python` client | Official v3 client; supports InfluxDB 3 write API with token auth | — Pending |
-| Per-device measurements in InfluxDB | Easier to query per-device; avoids tag cardinality issues | — Pending |
+| `influxdb3-python` client | Official v3 client; supports InfluxDB 3 write API with token auth | Validated in Phase 3 — pinned at 0.18.0 |
+| Per-device measurements in InfluxDB | Easier to query per-device; avoids tag cardinality issues | Validated in Phase 3 — measurement=device_id confirmed |
 | Docker-only deployment | Simplest reproducible environment; no system Python management | — Pending |
 | LAN-only (no cloud fallback) | Simpler auth model; no eWeLink credentials needed | — Pending |
 
@@ -108,4 +118,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 — Phase 2 complete: energy extraction layer (EnergyReading + extract_energy + extract_energy_multi)*
+*Last updated: 2026-04-03 — Phase 3 complete: InfluxWriter async write layer (writer.py, 18 unit tests, 4 integration tests, requirements pinned)*
