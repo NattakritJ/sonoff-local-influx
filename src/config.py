@@ -58,3 +58,34 @@ def parse_config() -> list[DeviceConfig]:
         )
 
     return validated
+
+
+def parse_influx_config() -> tuple[str, str, str]:
+    """Read and validate InfluxDB connection env vars.
+
+    Returns (host, token, database) tuple.
+    Calls sys.exit(1) with a clear message if any required var is missing.
+    """
+    missing = False
+
+    host = os.environ.get("INFLUX_HOST")
+    if not host:
+        print("ERROR: INFLUX_HOST environment variable is required.", file=sys.stderr)
+        missing = True
+
+    token = os.environ.get("INFLUX_TOKEN")
+    if not token:
+        print("ERROR: INFLUX_TOKEN environment variable is required.", file=sys.stderr)
+        missing = True
+
+    database = os.environ.get("INFLUX_DATABASE")
+    if not database:
+        print(
+            "ERROR: INFLUX_DATABASE environment variable is required.", file=sys.stderr
+        )
+        missing = True
+
+    if missing:
+        sys.exit(1)
+
+    return host, token, database  # type: ignore[return-value]  # guarded by missing check
