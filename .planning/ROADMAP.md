@@ -56,7 +56,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 03-01-PLAN.md — TDD: InfluxWriter class with async write(), check_connectivity(), error handling + 17 unit tests (mocked)
+- [x] 03-01-PLAN.md — TDD: InfluxWriter class with async write(), check_connectivity(), error handling + 17 unit tests (mocked)
 - [ ] 03-02-PLAN.md — Integration test against live InfluxDB 3 Core; update requirements.txt + pytest.ini
 
 ### Phase 4: Integration + Docker
@@ -77,5 +77,5 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
 | 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
-| 3. InfluxDB Writer | 0/TBD | Not started | - |
+| 3. InfluxDB Writer | 1/2 | In Progress|  |
 | 4. Integration + Docker | 0/TBD | Not started | - |

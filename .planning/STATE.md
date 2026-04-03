@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_plan: Not started
-status: planning
-stopped_at: Phase 3 context gathered
-last_updated: "2026-04-03T10:42:48.298Z"
+current_phase: 03
+current_plan: 1
+status: executing
+stopped_at: Completed 03-01-PLAN.md
+last_updated: "2026-04-03T10:56:19.227Z"
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
+  total_plans: 6
+  completed_plans: 5
   percent: 100
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Ready to plan
+**Status:** Ready to execute
 **Last updated:** 2026-04-03
 
 ---
@@ -33,10 +33,10 @@ progress:
 
 ## Current Position
 
-Phase: 02 (energy-extraction) — COMPLETE
-Plan: 2 of 2 — ALL PLANS DONE
-**Current phase:** 3
-**Current plan:** Not started
+Phase: 03 (influxdb-writer) — EXECUTING
+Plan: 2 of 2
+**Current phase:** 03
+**Current plan:** 1
 **Phase status:** Complete
 
 ```
@@ -53,7 +53,7 @@ Progress: [██████████] 100%
 |---|-------|--------|
 | 1 | LAN Transport Foundation | ✅ Complete |
 | 2 | Energy Extraction | ✅ Complete (2/2 plans done) |
-| 3 | InfluxDB Writer | Pending |
+| 3 | InfluxDB Writer | 🔄 In Progress (1/2 plans done) |
 | 4 | Integration + Docker | Pending |
 
 ---
@@ -66,10 +66,11 @@ Progress: [██████████] 100%
 | 01 | 02 | 5 min | 2 | 2 | 2026-04-03 |
 | 02 | 01 | 5 min | 1 | 6 | 2026-04-03 |
 | 02 | 02 | 4 min | 2 | 2 | 2026-04-03 |
+| 03 | 01 | 2 min | 2 | 3 | 2026-04-03 |
 
-- Plans completed: 4
+- Plans completed: 5
 - Phases completed: 2
-- Requirements satisfied: 19 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, OPS-01, OPS-02, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05)
+- Requirements satisfied: 26 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06)
 
 ---
 
@@ -89,12 +90,15 @@ Progress: [██████████] 100%
 - **[Phase 2 P02]** extract_energy_multi() skips absent channels — avoids noise in InfluxDB writes
 - **[Phase 2 P02]** energy_today always None for DualR3/SPM-4Relay (UIID 126/130) via LAN — cloud-only energy history
 - **[Phase 2 P02]** Multi-channel EnergyReading.channel uses 1-based integers matching Sonoff device outlet labelling
+- **[Phase 3 P01]** InfluxDBClient3 is the correct class name in influxdb3-python 0.18.0 (plan had typo InfluxDB3Client)
+- **[Phase 3 P01]** asyncio.to_thread() wraps all synchronous InfluxDB3 client calls (write + get_server_version)
+- **[Phase 3 P01]** Empty points (all fields None) skip client.write() entirely — no partial writes to InfluxDB
 
 ### Critical Pitfalls to Watch
 
 1. ~~**Phase 1:** Verify no residual `homeassistant` imports survive in `base.py`/`local.py`~~ ✅ RESOLVED — zero HA imports confirmed
 2. ~~**Phase 1:** `zeroconf.async_get_instance(hass)` call in `local.py`~~ ✅ RESOLVED — AsyncZeroconf used directly
-3. **Phase 3:** Confirm exact importable exception class from `influxdb_client_3` for the `try/except` in writer
+3. ~~**Phase 3:** Confirm exact importable exception class from `influxdb_client_3` for the `try/except` in writer~~ ✅ RESOLVED — `InfluxDBError` importable from `influxdb_client_3` top-level; class name is `InfluxDBClient3` not `InfluxDB3Client`
 4. **Phase 4:** Confirm `docker stop` triggers SIGTERM to PID 1 correctly — verify <10s exit
 
 ### Todos
@@ -109,5 +113,5 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-**Stopped at:** Phase 3 context gathered
+**Stopped at:** Completed 03-01-PLAN.md
 **To resume:** Phase 2 complete. Next: Phase 3 — InfluxDB Writer. Run `/gsd-execute-phase 3` to continue.

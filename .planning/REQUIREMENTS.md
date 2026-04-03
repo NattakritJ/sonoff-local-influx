@@ -27,19 +27,19 @@
 
 ### InfluxDB Writer
 
-- [ ] **INF-01**: Daemon writes each energy event to InfluxDB 3 Core immediately on receipt (no batching)
-- [ ] **INF-02**: Each InfluxDB write uses a per-device measurement name (one measurement per device, named by `device_id`)
-- [ ] **INF-03**: Each InfluxDB point includes a `device_id` tag and a `device_name` tag (if configured)
-- [ ] **INF-04**: Daemon authenticates with InfluxDB 3 using a token and writes to the configured bucket
-- [ ] **INF-05**: InfluxDB write uses `asyncio.to_thread()` to avoid blocking the asyncio event loop
-- [ ] **INF-06**: On InfluxDB write failure, daemon logs the error and continues without crashing
+- [x] **INF-01**: Daemon writes each energy event to InfluxDB 3 Core immediately on receipt (no batching)
+- [x] **INF-02**: Each InfluxDB write uses a per-device measurement name (one measurement per device, named by `device_id`)
+- [x] **INF-03**: Each InfluxDB point includes a `device_id` tag and a `device_name` tag (if configured)
+- [x] **INF-04**: Daemon authenticates with InfluxDB 3 using a token and writes to the configured bucket
+- [x] **INF-05**: InfluxDB write uses `asyncio.to_thread()` to avoid blocking the asyncio event loop
+- [x] **INF-06**: On InfluxDB write failure, daemon logs the error and continues without crashing
 
 ### Configuration
 
 - [x] **CFG-01**: All configuration is provided via environment variables (no config files inside the container)
 - [x] **CFG-02**: Required env vars: `INFLUX_HOST`, `INFLUX_TOKEN`, `INFLUX_DATABASE`, `SONOFF_DEVICES` (JSON list of device configs with `device_id`, `devicekey`, and optional `device_name`)
 - [x] **CFG-03**: Daemon fails fast at startup with a clear error message if any required env var is missing or malformed
-- [ ] **CFG-04**: Daemon performs a connectivity check to InfluxDB at startup and fails fast if unreachable
+- [x] **CFG-04**: Daemon performs a connectivity check to InfluxDB at startup and fails fast if unreachable
 
 ### Runtime & Operations
 
@@ -112,13 +112,13 @@
 | EXT-03 | Phase 2: Energy Extraction | Complete |
 | EXT-04 | Phase 2: Energy Extraction | Complete |
 | EXT-05 | Phase 2: Energy Extraction | Complete |
-| INF-01 | Phase 3: InfluxDB Writer | Pending |
-| INF-02 | Phase 3: InfluxDB Writer | Pending |
-| INF-03 | Phase 3: InfluxDB Writer | Pending |
-| INF-04 | Phase 3: InfluxDB Writer | Pending |
-| INF-05 | Phase 3: InfluxDB Writer | Pending |
-| INF-06 | Phase 3: InfluxDB Writer | Pending |
-| CFG-04 | Phase 3: InfluxDB Writer | Pending |
+| INF-01 | Phase 3: InfluxDB Writer | Complete |
+| INF-02 | Phase 3: InfluxDB Writer | Complete |
+| INF-03 | Phase 3: InfluxDB Writer | Complete |
+| INF-04 | Phase 3: InfluxDB Writer | Complete |
+| INF-05 | Phase 3: InfluxDB Writer | Complete |
+| INF-06 | Phase 3: InfluxDB Writer | Complete |
+| CFG-04 | Phase 3: InfluxDB Writer | Complete |
 | OPS-03 | Phase 4: Integration + Docker | Pending |
 | OPS-04 | Phase 4: Integration + Docker | Pending |
 | DOC-01 | Phase 4: Integration + Docker | Pending |
