@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 import signal
 import sys
 
@@ -94,7 +95,7 @@ class SonoffDaemon:
         if not params:
             return
 
-        uiid = int(msg.get("uiid", 0))
+        uiid = cfg.get("uiid", 0)
 
         _LOGGER.debug(
             "UPDATE | %s (%s) | uiid=%d | params=%s",
@@ -137,7 +138,30 @@ class SonoffDaemon:
             _LOGGER.info("HEARTBEAT | writes=%d", self._write_count)
 
 
+def _load_dotenv() -> None:
+    """Load .env file from the project root into os.environ (no-op if absent).
+
+    Parses KEY=VALUE lines; ignores comments and blanks; does NOT override
+    vars already set in the environment (so Docker env vars always win).
+    """
+    env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+    if not os.path.isfile(env_path):
+        return
+    with open(env_path) as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, _, value = line.partition("=")
+            key = key.strip()
+            value = value.strip()
+            if key and key not in os.environ:
+                os.environ[key] = value
+
+
 async def main() -> None:
+    # Load .env file if present (for local dev — Docker passes vars directly)
+    _load_dotenv()
     devices = parse_config()
     host, token, database = parse_influx_config()
     writer = InfluxWriter(host, token, database)
