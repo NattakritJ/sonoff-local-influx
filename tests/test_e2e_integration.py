@@ -46,7 +46,7 @@ class TestE2EIntegration:
 
         # InfluxDB configuration
         self.influx_url = "http://192.168.2.10:8181"
-        self.influx_token = "apivi3_AwBnUa4uyFJw_b5QZl6cZG1X7XriXLxaSelwPoTt8loiGzHXo256oB1ZCHRjkMML5Ajnv_cnO56flhBWdpH10w"
+        self.influx_token = "apiv3_AwBnUa4uyFJw_b5QZl6cZG1X7XriXLxaSelwPoTt8loiGzHXo256oB1ZCHRjkMML5Ajnv_cnO56flhBWdpH10w"
         self.influx_bucket = "sonoff_test"
 
     def test_01_config_parsing(self):
@@ -82,10 +82,10 @@ class TestE2EIntegration:
         # Simulate a POWR3 device (UIID 190) with energy readings
         # UIID 190 uses ×0.01 scale factor
         params = {
-            "power": 12345,  # 123.45W after scale
-            "voltage": 23010,  # 230.10V after scale
-            "current": 5373,  # 0.5373A after scale (rounded)
-            "dayKwh": 123,  # 1.23 kWh after scale
+            "power": 12345,  # 123.45W after ×0.01 scale
+            "voltage": 23010,  # 230.10V after ×0.01 scale
+            "current": 5373,  # 53.73A after ×0.01 scale
+            "dayKwh": 123,  # 1.23 kWh after ×0.01 scale
         }
 
         reading = extract_energy(self.device_id, 190, params)
@@ -95,7 +95,7 @@ class TestE2EIntegration:
         assert reading.uiid == 190
         assert abs(reading.power - 123.45) < 0.01
         assert abs(reading.voltage - 230.10) < 0.01
-        assert abs(reading.current - 0.5373) < 0.01
+        assert abs(reading.current - 53.73) < 0.01
         assert abs(reading.energy_today - 1.23) < 0.01
         assert reading.channel is None
 
@@ -106,12 +106,12 @@ class TestE2EIntegration:
     def test_04_energy_extraction_multi_channel(self):
         """Test 4: Extract energy metrics from DualR3 (UIID 126) multi-channel device."""
         params = {
-            "actPow_00": 12345,  # Channel 1: 123.45W after scale
-            "current_00": 5373,  # Channel 1: 0.5373A after scale
-            "voltage_00": 23010,  # Channel 1: 230.10V after scale
-            "actPow_01": 6789,  # Channel 2: 67.89W after scale
-            "current_01": 2945,  # Channel 2: 0.2945A after scale
-            "voltage_01": 23010,  # Channel 2: 230.10V after scale
+            "actPow_00": 12345,  # Channel 1: 123.45W after ×0.01 scale
+            "current_00": 5373,  # Channel 1: 53.73A after ×0.01 scale
+            "voltage_00": 23010,  # Channel 1: 230.10V after ×0.01 scale
+            "actPow_01": 6789,  # Channel 2: 67.89W after ×0.01 scale
+            "current_01": 2945,  # Channel 2: 29.45A after ×0.01 scale
+            "voltage_01": 23010,  # Channel 2: 230.10V after ×0.01 scale
         }
 
         readings = extract_energy_multi(self.device_id, 126, params)
@@ -136,7 +136,7 @@ class TestE2EIntegration:
                 uiid=190,
                 power=123.45,
                 voltage=230.10,
-                current=0.537,
+                current=53.73,
                 energy_today=1.23,
                 channel=None,
             )

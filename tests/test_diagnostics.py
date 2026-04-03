@@ -31,7 +31,7 @@ class TestDiagnostics:
         self.devicekey = "33e85177-8cb4-4fc8-bd5a-262c092d9b16"
         self.device_name = "Sonoff-POWR3-Test"
         self.influx_url = "http://192.168.2.10:8181"
-        self.influx_token = "apivi3_AwBnUa4uyFJw_b5QZl6cZG1X7XriXLxaSelwPoTt8loiGzHXo256oB1ZCHRjkMML5Ajnv_cnO56flhBWdpH10w"
+        self.influx_token = "apiv3_AwBnUa4uyFJw_b5QZl6cZG1X7XriXLxaSelwPoTt8loiGzHXo256oB1ZCHRjkMML5Ajnv_cnO56flhBWdpH10w"
         self.influx_bucket = "sonoff_test"
 
     def test_diagnose_influx_auth(self):
@@ -61,15 +61,21 @@ class TestDiagnostics:
             print(f"\nDiagnostic Suggestions:")
 
             if "401" in error_msg or "Unauthorized" in error_msg:
-                print(f"  → 401 Unauthorized: Token may be invalid, expired, or for a different InfluxDB instance")
-                print(f"    - Verify token is correct and has API token (not just read-only)")
+                print(
+                    f"  → 401 Unauthorized: Token may be invalid, expired, or for a different InfluxDB instance"
+                )
+                print(
+                    f"    - Verify token is correct and has API token (not just read-only)"
+                )
                 print(f"    - Verify token is for the correct InfluxDB instance")
                 print(f"    - Verify InfluxDB instance is running at {self.influx_url}")
                 return False
 
             elif "403" in error_msg or "Forbidden" in error_msg:
                 print(f"  → 403 Forbidden: Token exists but lacks required permissions")
-                print(f"    - Ensure token has write permission to bucket: {self.influx_bucket}")
+                print(
+                    f"    - Ensure token has write permission to bucket: {self.influx_bucket}"
+                )
                 return False
 
             elif "Connection" in error_msg or "refused" in error_msg.lower():
@@ -96,18 +102,24 @@ class TestDiagnostics:
         print(f"\nToken value: {self.influx_token}")
         print(f"Token length: {len(self.influx_token)} characters")
         print(f"Token starts with: {self.influx_token[:20]}")
-        print(f"Token type indicator: {self.influx_token[:7] if len(self.influx_token) >= 7 else 'TOO_SHORT'}")
+        print(
+            f"Token type indicator: {self.influx_token[:7] if len(self.influx_token) >= 7 else 'TOO_SHORT'}"
+        )
 
         # InfluxDB tokens typically start with specific prefixes
-        if self.influx_token.startswith("apivi3"):
-            print(f"\n✓ Token format appears correct (apivi3 prefix = API v3 token)")
+        if self.influx_token.startswith("apiv3_"):
+            print(f"\n✓ Token format appears correct (apiv3_ prefix = API v3 token)")
         else:
-            print(f"\n⚠ Token prefix is unexpected (expected 'apivi3_', got '{self.influx_token[:10]}')")
+            print(
+                f"\n⚠ Token prefix is unexpected (expected 'apiv3_', got '{self.influx_token[:10]}')"
+            )
 
         if len(self.influx_token) > 50:
             print(f"✓ Token length seems reasonable")
         else:
-            print(f"✗ Token length seems short (expected >50 chars, got {len(self.influx_token)})")
+            print(
+                f"✗ Token length seems short (expected >50 chars, got {len(self.influx_token)})"
+            )
 
     def test_report_environment(self):
         """Report current environment setup."""
@@ -121,6 +133,7 @@ class TestDiagnostics:
         # Try to import InfluxDB client
         try:
             from influxdb_client_3 import InfluxDBClient3, Point
+
             print(f"✓ InfluxDB client library: influxdb_client_3 (installed)")
         except ImportError:
             print(f"✗ InfluxDB client library: NOT INSTALLED")
@@ -149,15 +162,17 @@ class TestDiagnostics:
                 "devicekey": self.devicekey,
                 "device_name": self.device_name,
             }
-            print(f"   ✓ Device config: {device_config['device_id']} ({device_config['device_name']})")
+            print(
+                f"   ✓ Device config: {device_config['device_id']} ({device_config['device_name']})"
+            )
 
             # Step 2: Energy extraction (single-channel)
             print(f"\n2. Energy Extraction (Single-Channel POWR3)")
             params_powr3 = {
-                "power": 12345,      # 123.45W after ×0.01 scale
-                "voltage": 23010,    # 230.10V after ×0.01 scale
-                "current": 5373,     # 0.5373A after ×0.01 scale
-                "dayKwh": 123,       # 1.23 kWh after ×0.01 scale
+                "power": 12345,  # 123.45W after ×0.01 scale
+                "voltage": 23010,  # 230.10V after ×0.01 scale
+                "current": 5373,  # 0.5373A after ×0.01 scale
+                "dayKwh": 123,  # 1.23 kWh after ×0.01 scale
             }
             reading = extract_energy(self.device_id, 190, params_powr3)
             assert reading is not None
@@ -179,7 +194,9 @@ class TestDiagnostics:
             }
             readings_multi = extract_energy_multi(self.device_id, 126, params_dual)
             assert len(readings_multi) == 2
-            print(f"   ✓ Multi-channel reading extracted ({len(readings_multi)} channels):")
+            print(
+                f"   ✓ Multi-channel reading extracted ({len(readings_multi)} channels):"
+            )
             for i, r in enumerate(readings_multi, 1):
                 print(f"     - Ch{r.channel}: {r.power}W, {r.voltage}V, {r.current}A")
 
@@ -205,6 +222,7 @@ class TestDiagnostics:
         except Exception as e:
             print(f"\n✗ Error during E2E test: {e}")
             import traceback
+
             traceback.print_exc()
             return False
 
@@ -216,9 +234,12 @@ class TestDiagnostics:
 
         print(f"\nStep 1: Network connectivity check")
         import socket
+
         try:
             host_ip = self.influx_url.split("://")[1].split(":")[0]
-            port = int(self.influx_url.split(":")[-1]) if ":" in self.influx_url else 8086
+            port = (
+                int(self.influx_url.split(":")[-1]) if ":" in self.influx_url else 8086
+            )
             print(f"  Attempting to resolve/connect to {host_ip}:{port}...")
 
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -238,16 +259,20 @@ class TestDiagnostics:
 
         print(f"\nStep 2: InfluxDB API authentication check")
         import urllib3
+
         urllib3.disable_warnings()
 
         import requests
+
         try:
             # Try direct HTTP request with token
             headers = {
                 "Authorization": f"Token {self.influx_token}",
                 "Content-Type": "application/json",
             }
-            response = requests.get(f"{self.influx_url}/ping", headers=headers, timeout=5)
+            response = requests.get(
+                f"{self.influx_url}/ping", headers=headers, timeout=5
+            )
             print(f"  Status code: {response.status_code}")
             print(f"  Response: {response.text[:100]}")
 
@@ -269,7 +294,8 @@ def test_summary():
     print("\n" + "=" * 70)
     print("DIAGNOSTIC TEST SUMMARY")
     print("=" * 70)
-    print("""
+    print(
+        """
 This diagnostic test suite checks:
 
 1. InfluxDB Authentication
@@ -307,5 +333,6 @@ NEXT STEPS:
   4. Verify token has NOT expired
   5. Regenerate token if needed and retest
 
-""")
+"""
+    )
     print("=" * 70)
