@@ -7,7 +7,7 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
 ## Phases
 
 - [x] **Phase 1: LAN Transport Foundation** - Strip HA code, validate standalone mDNS + AES decrypt works clean (completed 2026-04-03)
-- [ ] **Phase 2: Energy Extraction** - Pure extractor module covering all UIIDs with correct scaling
+- [x] **Phase 2: Energy Extraction** - Pure extractor module covering all UIIDs with correct scaling (completed 2026-04-03)
 - [ ] **Phase 3: InfluxDB Writer** - Isolated async-safe write layer tested against live InfluxDB 3 Core
 - [ ] **Phase 4: Integration + Docker** - Wire all components into a deployable daemon image
 
@@ -42,7 +42,7 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md — EnergyReading dataclass + extract_energy() for all single-channel UIIDs (32, 182, 190, 226, 262, 276, 277, 7032) with per-UIID scaling + type coercion
-- [ ] 02-02-PLAN.md — extract_energy_multi() for multi-channel DualR3 (UIID 126) and SPM-4Relay (UIID 130) with channel tag
+- [x] 02-02-PLAN.md — extract_energy_multi() for multi-channel DualR3 (UIID 126) and SPM-4Relay (UIID 130) with channel tag
 
 ### Phase 3: InfluxDB Writer
 **Goal**: An isolated `InfluxWriter` class that writes energy events to InfluxDB 3 Core asynchronously, with correct schema, without blocking the event loop, and with log-and-continue error handling
@@ -72,6 +72,6 @@ Plans:
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
-| 2. Energy Extraction | 0/TBD | Not started | - |
+| 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
 | 3. InfluxDB Writer | 0/TBD | Not started | - |
 | 4. Integration + Docker | 0/TBD | Not started | - |
