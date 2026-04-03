@@ -50,9 +50,17 @@ Reliable, low-latency energy data from Sonoff LAN devices flowing into InfluxDB 
 - ✓ `.env.example` — all 4 required env vars documented with inline comments and examples (DOC-05)
 - ✓ All 4 dependencies pinned in `requirements.txt` with `==` version specifiers
 
+### Validated in Phase 6: POWCT Grid Backfeed
+
+- ✓ `EnergyReading.energy_backfeed_today: float | None` field added (default `None`, backward-compatible with all other UIIDs)
+- ✓ UIID 190 backfeed branch in `extract_energy()` with three-way power-flow logic: export → negative sign encoding; consumption → positive; both-zero → `EnergyReading(power=0.0)` (never `None`)
+- ✓ `dayPowerSupply` → `energy_backfeed_today = round(val × 0.01, 4)` when present, `None` when absent
+- ✓ `writer.write()` includes `energy_backfeed_today` in InfluxDB point when non-None; omits when None
+- ✓ 8 new TDD tests (39 total) covering all UIID 190 backfeed cases — zero regressions in other UIIDs
+
 ### Active
 
-(none — all milestone v1.0 requirements delivered)
+(none — all milestone v1.0 requirements delivered, Phase 6 extension complete)
 
 ### Out of Scope
 
@@ -124,4 +132,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 — Phase 4 complete: SonoffDaemon integration + Docker packaging. Milestone v1.0 complete — all 4 phases, 8 plans, 33/33 requirements satisfied.*
+*Last updated: 2026-04-04 — Phase 6 complete: POWCT grid backfeed capture. EXT-06 delivered — sign-encoded `power`/`current` and new `energy_backfeed_today` field for UIID 190 devices. 39/39 unit tests pass.*
