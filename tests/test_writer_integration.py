@@ -94,18 +94,23 @@ def test_write_and_query_single_reading(writer):
 
     # Verify result has rows
     assert result is not None
-    data = result.to_pydict()
-    assert len(data.get("device_id", [])) == 1, "Expected exactly one row"
+    # Use column() to avoid to_pydict() choking on nanosecond timestamps (PyArrow limitation)
+    col_names = result.schema.names
+    assert "device_id" in col_names, f"device_id column missing; got: {col_names}"
+    assert result.num_rows == 1, f"Expected exactly one row, got {result.num_rows}"
+
+    def col(name):
+        return result.column(name).to_pylist()
 
     # Verify tags (per D-02, INF-03)
-    assert data["device_id"][0] == device_id, f"device_id tag mismatch"
-    assert data["device_name"][0] == device_name, f"device_name tag mismatch"
+    assert col("device_id")[0] == device_id, "device_id tag mismatch"
+    assert col("device_name")[0] == device_name, "device_name tag mismatch"
 
     # Verify fields (per D-03, INF-01)
-    assert abs(data["power"][0] - reading.power) < 0.001, "power field mismatch"
-    assert abs(data["voltage"][0] - reading.voltage) < 0.001, "voltage field mismatch"
-    assert abs(data["current"][0] - reading.current) < 0.001, "current field mismatch"
-    assert abs(data["energy_today"][0] - reading.energy_today) < 0.001, "energy_today field mismatch"
+    assert abs(col("power")[0] - reading.power) < 0.001, "power field mismatch"
+    assert abs(col("voltage")[0] - reading.voltage) < 0.001, "voltage field mismatch"
+    assert abs(col("current")[0] - reading.current) < 0.001, "current field mismatch"
+    assert abs(col("energy_today")[0] - reading.energy_today) < 0.001, "energy_today field mismatch"
 
 
 @pytest.mark.integration
@@ -138,11 +143,17 @@ def test_write_omits_none_fields(writer):
     finally:
         client.close()
 
-    data = result.to_pydict()
-    assert len(data.get("device_id", [])) == 1
+    col_names = result.schema.names
+    assert "device_id" in col_names, f"device_id column missing; got: {col_names}"
+    assert result.num_rows == 1, f"Expected exactly one row, got {result.num_rows}"
+
+    def col(name):
+        return result.column(name).to_pylist()
+
+    assert len(col("device_id")) == 1
     # power must be absent or None — not a real float
-    assert "power" not in data or data["power"][0] is None, \
+    assert "power" not in col_names or col("power")[0] is None, \
         "power field should be absent when reading.power is None"
     # voltage and current should be present
-    assert abs(data["voltage"][0] - 230.0) < 0.001
-    assert abs(data["current"][0] - 0.5) < 0.001
+    assert abs(col("voltage")[0] - 230.0) < 0.001
+    assert abs(col("current")[0] - 0.5) < 0.001
