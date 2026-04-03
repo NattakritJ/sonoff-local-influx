@@ -10,12 +10,12 @@
 
 ### LAN Transport
 
-- [ ] **LAN-01**: Daemon discovers configured Sonoff devices on the local network via mDNS (`_ewelink._tcp.local.`) at startup
-- [ ] **LAN-02**: Daemon receives energy update events in real-time from discovered devices (event-driven, no polling)
-- [ ] **LAN-03**: Daemon decrypts AES-128-CBC encrypted LAN payloads (non-DIY devices) using per-device `devicekey`
-- [ ] **LAN-04**: Daemon handles plain-JSON LAN payloads (DIY and older devices) without decryption
-- [ ] **LAN-05**: Daemon auto-detects whether a device uses encrypted or plain protocol per the mDNS TXT `encrypt` field
-- [ ] **LAN-06**: Daemon only processes devices in the configured device list; unknown devices are silently ignored
+- [x] **LAN-01**: Daemon discovers configured Sonoff devices on the local network via mDNS (`_ewelink._tcp.local.`) at startup
+- [x] **LAN-02**: Daemon receives energy update events in real-time from discovered devices (event-driven, no polling)
+- [x] **LAN-03**: Daemon decrypts AES-128-CBC encrypted LAN payloads (non-DIY devices) using per-device `devicekey`
+- [x] **LAN-04**: Daemon handles plain-JSON LAN payloads (DIY and older devices) without decryption
+- [x] **LAN-05**: Daemon auto-detects whether a device uses encrypted or plain protocol per the mDNS TXT `encrypt` field
+- [x] **LAN-06**: Daemon only processes devices in the configured device list; unknown devices are silently ignored
 
 ### Energy Extraction
 
@@ -36,15 +36,15 @@
 
 ### Configuration
 
-- [ ] **CFG-01**: All configuration is provided via environment variables (no config files inside the container)
-- [ ] **CFG-02**: Required env vars: `INFLUX_HOST`, `INFLUX_TOKEN`, `INFLUX_DATABASE`, `SONOFF_DEVICES` (JSON list of device configs with `device_id`, `devicekey`, and optional `device_name`)
-- [ ] **CFG-03**: Daemon fails fast at startup with a clear error message if any required env var is missing or malformed
+- [x] **CFG-01**: All configuration is provided via environment variables (no config files inside the container)
+- [x] **CFG-02**: Required env vars: `INFLUX_HOST`, `INFLUX_TOKEN`, `INFLUX_DATABASE`, `SONOFF_DEVICES` (JSON list of device configs with `device_id`, `devicekey`, and optional `device_name`)
+- [x] **CFG-03**: Daemon fails fast at startup with a clear error message if any required env var is missing or malformed
 - [ ] **CFG-04**: Daemon performs a connectivity check to InfluxDB at startup and fails fast if unreachable
 
 ### Runtime & Operations
 
-- [ ] **OPS-01**: Daemon runs as an always-on process (not a cron script)
-- [ ] **OPS-02**: Daemon handles SIGTERM and SIGINT for graceful shutdown (clean exit within 10 seconds)
+- [x] **OPS-01**: Daemon runs as an always-on process (not a cron script)
+- [x] **OPS-02**: Daemon handles SIGTERM and SIGINT for graceful shutdown (clean exit within 10 seconds)
 - [ ] **OPS-03**: Daemon emits structured log lines for key events: startup, device discovery, each energy write, write failures
 - [ ] **OPS-04**: Daemon logs a periodic heartbeat (write counter every 60 seconds) for operational visibility
 
@@ -58,9 +58,9 @@
 
 ### Codebase Migration
 
-- [ ] **MIG-01**: All Home Assistant code is removed (platform files, config_flow, entity.py, __init__.py HA integration, translations, manifest.json)
-- [ ] **MIG-02**: LAN transport files (`ewelink/base.py`, `ewelink/local.py`) are extracted and stripped of all HA imports
-- [ ] **MIG-03**: `devices.py` and all HA entity class files are removed; energy extraction logic is reimplemented in a standalone `extractor.py`
+- [x] **MIG-01**: All Home Assistant code is removed (platform files, config_flow, entity.py, __init__.py HA integration, translations, manifest.json)
+- [x] **MIG-02**: LAN transport files (`ewelink/base.py`, `ewelink/local.py`) are extracted and stripped of all HA imports
+- [x] **MIG-03**: `devices.py` and all HA entity class files are removed; energy extraction logic is reimplemented in a standalone `extractor.py`
 
 ---
 
@@ -93,20 +93,20 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| MIG-01 | Phase 1: LAN Transport Foundation | Pending |
-| MIG-02 | Phase 1: LAN Transport Foundation | Pending |
-| MIG-03 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-01 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-02 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-03 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-04 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-05 | Phase 1: LAN Transport Foundation | Pending |
-| LAN-06 | Phase 1: LAN Transport Foundation | Pending |
-| CFG-01 | Phase 1: LAN Transport Foundation | Pending |
-| CFG-02 | Phase 1: LAN Transport Foundation | Pending |
-| CFG-03 | Phase 1: LAN Transport Foundation | Pending |
-| OPS-01 | Phase 1: LAN Transport Foundation | Pending |
-| OPS-02 | Phase 1: LAN Transport Foundation | Pending |
+| MIG-01 | Phase 1: LAN Transport Foundation | Complete |
+| MIG-02 | Phase 1: LAN Transport Foundation | Complete |
+| MIG-03 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-01 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-02 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-03 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-04 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-05 | Phase 1: LAN Transport Foundation | Complete |
+| LAN-06 | Phase 1: LAN Transport Foundation | Complete |
+| CFG-01 | Phase 1: LAN Transport Foundation | Complete |
+| CFG-02 | Phase 1: LAN Transport Foundation | Complete |
+| CFG-03 | Phase 1: LAN Transport Foundation | Complete |
+| OPS-01 | Phase 1: LAN Transport Foundation | Complete |
+| OPS-02 | Phase 1: LAN Transport Foundation | Complete |
 | EXT-01 | Phase 2: Energy Extraction | Pending |
 | EXT-02 | Phase 2: Energy Extraction | Pending |
 | EXT-03 | Phase 2: Energy Extraction | Pending |

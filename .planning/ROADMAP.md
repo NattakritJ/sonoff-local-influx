@@ -6,7 +6,7 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
 
 ## Phases
 
-- [ ] **Phase 1: LAN Transport Foundation** - Strip HA code, validate standalone mDNS + AES decrypt works clean
+- [x] **Phase 1: LAN Transport Foundation** - Strip HA code, validate standalone mDNS + AES decrypt works clean (completed 2026-04-03)
 - [ ] **Phase 2: Energy Extraction** - Pure extractor module covering all UIIDs with correct scaling
 - [ ] **Phase 3: InfluxDB Writer** - Isolated async-safe write layer tested against live InfluxDB 3 Core
 - [ ] **Phase 4: Integration + Docker** - Wire all components into a deployable daemon image
@@ -26,8 +26,8 @@ Brownfield transformation of the AlexxIT/SonoffLAN Home Assistant integration in
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Extract clean `src/ewelink/` package from HA codebase; add `requirements.txt`
-- [ ] 01-02-PLAN.md — Config loading, async daemon entrypoint, mDNS wiring, SIGTERM shutdown
+- [x] 01-01-PLAN.md — Extract clean `src/ewelink/` package from HA codebase; add `requirements.txt`
+- [x] 01-02-PLAN.md — Config loading, async daemon entrypoint, mDNS wiring, SIGTERM shutdown
 
 ### Phase 2: Energy Extraction
 **Goal**: A pure-function extractor module that converts raw Sonoff device params into typed `EnergyReading` values with correct per-UIID scaling — fully unit-testable with no I/O
@@ -67,7 +67,7 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. LAN Transport Foundation | 0/TBD | Not started | - |
+| 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
 | 2. Energy Extraction | 0/TBD | Not started | - |
 | 3. InfluxDB Writer | 0/TBD | Not started | - |
 | 4. Integration + Docker | 0/TBD | Not started | - |
