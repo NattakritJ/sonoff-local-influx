@@ -1,4 +1,4 @@
 aiohttp>=3.9,<4
 cryptography>=41,<45
 zeroconf>=0.131,<1
-influxdb3-python>=0.18,<1
+influxdb3-python==0.18.0
