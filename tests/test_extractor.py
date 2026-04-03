@@ -2,7 +2,8 @@
 TDD tests for src/extractor.py — EnergyReading dataclass + extract_energy() / extract_energy_multi() functions.
 
 Covers all single-channel UIIDs (Plan 01):
-  - UIID 32  (POWR2):          power/current/voltage ×1
+  - UIID 32  (POWR2/S31):      power/current/voltage — pre-scaled floats, ×1 (fw 3.x)
+  - UIID 32  (POWR3 hw):       power/current/voltage — raw centi-units, ×0.01 (fw 1.2.1)
   - UIID 182 (S40):            power/current/voltage ×1
   - UIID 190 (POWR3/S60):      power/current/voltage ×0.01, dayKwh → energy_today ×0.01
   - UIID 226 (CK-BL602):       phase_0_p/c/v → power/current/voltage ×1
@@ -26,16 +27,35 @@ from extractor import EnergyReading, extract_energy, extract_energy_multi  # noq
 
 
 # ---------------------------------------------------------------------------
-# Test 1: UIID 32 (POWR2) — int raw params → float output, ×1, channel=None
+# Test 1: UIID 32 (POWR2/S31 fw 3.x) — pre-scaled string floats → ×1 passthrough
 # ---------------------------------------------------------------------------
-def test_uiid_32_int_params_scale_x1():
-    result = extract_energy("dev1", 32, {"power": 2300, "current": 500, "voltage": 23000})
+def test_uiid_32_prescaled_string_floats_scale_x1():
+    """POWR2/S31 firmware 3.x sends pre-scaled floats as strings (e.g. "234.53" V).
+    Values are ≤ 1000 so auto-detection leaves them as-is (×1)."""
+    result = extract_energy("dev1", 32, {"power": "184.21", "current": "0.88", "voltage": "234.53"})
     assert isinstance(result, EnergyReading)
     assert result.device_id == "dev1"
     assert result.uiid == 32
-    assert result.power == pytest.approx(2300.0)
-    assert result.current == pytest.approx(500.0)
-    assert result.voltage == pytest.approx(23000.0)
+    assert result.power == pytest.approx(184.21)
+    assert result.current == pytest.approx(0.88)
+    assert result.voltage == pytest.approx(234.53)
+    assert result.energy_today is None
+    assert result.channel is None
+
+
+# ---------------------------------------------------------------------------
+# Test 1b: UIID 32 (POWR3 hw, fw 1.2.1) — raw centi-units → ×0.01 auto-detected
+# ---------------------------------------------------------------------------
+def test_uiid_32_raw_centi_units_scale_x001():
+    """POWR3 hardware (fw 1.2.1) reports UIID 32 but sends raw centi-units.
+    Voltage 23455 → 234.55 V; power 14641 → 146.41 W; current 91 → 0.91 A."""
+    result = extract_energy("dev1b", 32, {"power": 14641, "current": 91, "voltage": 23455})
+    assert isinstance(result, EnergyReading)
+    assert result.device_id == "dev1b"
+    assert result.uiid == 32
+    assert result.power == pytest.approx(146.41)
+    assert result.current == pytest.approx(0.91)
+    assert result.voltage == pytest.approx(234.55)
     assert result.energy_today is None
     assert result.channel is None
 
