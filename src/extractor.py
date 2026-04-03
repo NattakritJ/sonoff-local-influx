@@ -118,10 +118,10 @@ def extract_energy(
     if raw_power is None and raw_current is None and raw_voltage is None:
         return None
 
-    # Apply scale factor
-    power = (_to_float(raw_power) * scale) if raw_power is not None else None
-    current = (_to_float(raw_current) * scale) if raw_current is not None else None
-    voltage = (_to_float(raw_voltage) * scale) if raw_voltage is not None else None
+    # Apply scale factor and round to 2 dp to eliminate IEEE 754 artifacts
+    power = round(_to_float(raw_power) * scale, 2) if raw_power is not None else None
+    current = round(_to_float(raw_current) * scale, 2) if raw_current is not None else None
+    voltage = round(_to_float(raw_voltage) * scale, 2) if raw_voltage is not None else None
 
     # Extract daily energy total where supported
     energy_today: float | None = None
@@ -182,9 +182,9 @@ def extract_energy_multi(
         if raw_power is None and raw_current is None and raw_voltage is None:
             continue
 
-        power = round(_to_float(raw_power) * 0.01, 4) if raw_power is not None else None
-        current = round(_to_float(raw_current) * 0.01, 4) if raw_current is not None else None
-        voltage = round(_to_float(raw_voltage) * 0.01, 4) if raw_voltage is not None else None
+        power = round(_to_float(raw_power) * 0.01, 2) if raw_power is not None else None
+        current = round(_to_float(raw_current) * 0.01, 2) if raw_current is not None else None
+        voltage = round(_to_float(raw_voltage) * 0.01, 2) if raw_voltage is not None else None
 
         readings.append(
             EnergyReading(

@@ -393,3 +393,27 @@ def test_plan_01_exports_still_available():
     assert isinstance(r, ER)
     assert r.power == pytest.approx(100.0)
     assert r.channel is None
+
+
+# ---------------------------------------------------------------------------
+# Test: Floating-point artifact elimination — single-channel (×0.01 scale)
+# ---------------------------------------------------------------------------
+def test_single_channel_no_float_artifact():
+    # 131561 * 0.01 in IEEE 754 = 1315.6100000000001 without rounding
+    result = extract_energy("dev_artifact", 190, {"power": 131561, "voltage": 22000, "current": 500})
+    assert isinstance(result, EnergyReading)
+    assert result.power == 1315.61
+    assert str(result.power) == "1315.61"  # Confirms no trailing artifact digits
+
+
+# ---------------------------------------------------------------------------
+# Test: Floating-point artifact elimination — multi-channel (DualR3)
+# ---------------------------------------------------------------------------
+def test_multi_channel_no_float_artifact():
+    # 131561 * 0.01 in IEEE 754 = 1315.6100000000001 without rounding
+    result = extract_energy_multi("dev_artifact2", 126, {
+        "actPow_00": 131561, "current_00": 500, "voltage_00": 22000,
+    })
+    assert len(result) == 1
+    assert result[0].power == 1315.61
+    assert str(result[0].power) == "1315.61"
