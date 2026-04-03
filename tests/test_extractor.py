@@ -437,3 +437,120 @@ def test_multi_channel_no_float_artifact():
     assert len(result) == 1
     assert result[0].power == 1315.61
     assert str(result[0].power) == "1315.61"
+
+
+# ===========================================================================
+# Plan 06-01: UIID 190 (POWCT) backfeed / grid-export tests
+# ===========================================================================
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — grid export case: supplyPower > 0 → negative power/current
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_grid_export_negative_power():
+    """supplyPower=5000 (50 W export) → power=-50.0, current=-2.0 (negative sign convention)."""
+    result = extract_energy(
+        "dev_bf1", 190,
+        {"power": 0, "current": 0, "voltage": 23500, "supplyPower": 5000, "supplyCurrent": 200},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.power == pytest.approx(-50.0)
+    assert result.current == pytest.approx(-2.0)
+    assert result.voltage == pytest.approx(235.0)
+    assert result.energy_backfeed_today is None
+    assert result.channel is None
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — grid export + dayPowerSupply → energy_backfeed_today set
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_grid_export_with_day_supply():
+    """dayPowerSupply=8 → energy_backfeed_today = round(8 * 0.01, 4) = 0.08."""
+    result = extract_energy(
+        "dev_bf2", 190,
+        {"power": 0, "current": 0, "voltage": 23500, "supplyPower": 5000, "supplyCurrent": 200, "dayPowerSupply": 8},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.power == pytest.approx(-50.0)
+    assert result.current == pytest.approx(-2.0)
+    assert result.energy_backfeed_today == pytest.approx(0.08)
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — consumption case (power > 0, supplyPower = 0) — unchanged
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_consumption_unchanged():
+    """Normal consumption: power and current remain positive as before."""
+    result = extract_energy(
+        "dev_bf3", 190,
+        {"power": 2300, "current": 500, "voltage": 22000, "supplyPower": 0, "supplyCurrent": 0},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.power == pytest.approx(23.0)
+    assert result.current == pytest.approx(5.0)
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — both zero: result is not None, power=0.0, current=0.0
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_both_zero_writes_zero():
+    """Both power and supplyPower=0 → explicit zero writes (D-13), not None."""
+    result = extract_energy(
+        "dev_bf4", 190,
+        {"power": 0, "current": 0, "voltage": 23000, "supplyPower": 0, "supplyCurrent": 0},
+    )
+    assert result is not None
+    assert result.power == pytest.approx(0.0)
+    assert result.current == pytest.approx(0.0)
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — dayPowerSupply=250 → energy_backfeed_today = 2.5
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_energy_backfeed_today_scaled():
+    """dayPowerSupply=250 → round(250 * 0.01, 4) = 2.5."""
+    result = extract_energy(
+        "dev_bf5", 190,
+        {"power": 0, "current": 0, "voltage": 23000, "supplyPower": 100, "supplyCurrent": 50, "dayPowerSupply": 250},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.energy_backfeed_today == pytest.approx(2.5)
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — dayPowerSupply absent → energy_backfeed_today = None
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_energy_backfeed_today_none_when_absent():
+    """No dayPowerSupply in params → energy_backfeed_today is None."""
+    result = extract_energy(
+        "dev_bf6", 190,
+        {"power": 0, "current": 0, "voltage": 23000, "supplyPower": 100, "supplyCurrent": 50},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.energy_backfeed_today is None
+
+
+# ---------------------------------------------------------------------------
+# Test: UIID 190 — string values → coerced correctly via _to_float()
+# ---------------------------------------------------------------------------
+def test_uiid_190_backfeed_string_values():
+    """String input for supplyPower/supplyCurrent are coerced correctly."""
+    result = extract_energy(
+        "dev_bf7", 190,
+        {"power": "0", "current": "0", "voltage": "23500", "supplyPower": "5000", "supplyCurrent": "200"},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.power == pytest.approx(-50.0)
+    assert result.current == pytest.approx(-2.0)
+
+
+# ---------------------------------------------------------------------------
+# Test: Non-190 UIID → energy_backfeed_today is always None
+# ---------------------------------------------------------------------------
+def test_other_uiid_energy_backfeed_today_is_none():
+    """For non-190 UIIDs (e.g. UIID 276), energy_backfeed_today must be None."""
+    result = extract_energy(
+        "dev_bf8", 276,
+        {"power": 5000, "current": 200, "voltage": 22000},
+    )
+    assert isinstance(result, EnergyReading)
+    assert result.energy_backfeed_today is None
