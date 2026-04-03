@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 4
-current_plan: Not started
-status: planning
-stopped_at: Completed 03-02-PLAN.md
-last_updated: "2026-04-03T11:24:37.035Z"
+current_phase: 04
+current_plan: 2
+status: executing
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-04-03T11:58:37.053Z"
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 8
+  completed_plans: 7
   percent: 100
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Ready to plan
+**Status:** Ready to execute
 **Last updated:** 2026-04-03
 
 ---
@@ -33,16 +33,16 @@ progress:
 
 ## Current Position
 
-Phase: 03 (influxdb-writer) — EXECUTING
+Phase: 04 (integration-docker) — EXECUTING
 Plan: 2 of 2
-**Current phase:** 4
-**Current plan:** Not started
+**Current phase:** 04
+**Current plan:** 1
 **Phase status:** Complete
 
 ```
-Progress: [██████████] 100%
-                         ▲
-                      CURRENT
+Progress: [█████████░] 88%
+                        ▲
+                     CURRENT
 ```
 
 ---
@@ -68,10 +68,11 @@ Progress: [██████████] 100%
 | 02 | 02 | 4 min | 2 | 2 | 2026-04-03 |
 | 03 | 01 | 2 min | 2 | 3 | 2026-04-03 |
 | 03 | 02 | 15 min | 2 | 3 | 2026-04-03 |
+| 04 | 01 | 2 min | 3 | 3 | 2026-04-03 |
 
-- Plans completed: 6
+- Plans completed: 7
 - Phases completed: 3
-- Requirements satisfied: 26 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06)
+- Requirements satisfied: 28 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, OPS-03, OPS-04, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06)
 
 ---
 
@@ -96,6 +97,9 @@ Progress: [██████████] 100%
 - **[Phase 3 P01]** Empty points (all fields None) skip client.write() entirely — no partial writes to InfluxDB
 - **[Phase 3 P02]** column() used instead of to_pydict() on PyArrow query results — to_pydict() crashes with nanosecond timestamp columns in pyarrow ≥14
 - **[Phase 3 P02]** Integration tests auto-skip when INFLUX_HOST unset via pytestmark skipif — no CI config changes needed
+- **[Phase 4 P01]** asyncio.ensure_future() used in sync _on_update() to schedule async _write_reading() without blocking mDNS callback
+- **[Phase 4 P01]** frozenset({126, 130}) as _MULTI_CHANNEL_UIIDS constant for O(1) UIID routing in _on_update()
+- **[Phase 4 P01]** writer.write() never raises — success log placed unconditionally after await in _write_reading()
 
 ### Critical Pitfalls to Watch
 
@@ -116,5 +120,5 @@ Progress: [██████████] 100%
 
 ## Session Continuity
 
-**Stopped at:** Completed 03-02-PLAN.md
-**To resume:** Phase 2 complete. Next: Phase 3 — InfluxDB Writer. Run `/gsd-execute-phase 3` to continue.
+**Stopped at:** Completed 04-01-PLAN.md
+**To resume:** Phase 4 in progress. Next: Phase 4 Plan 02 — Docker packaging. Run `/gsd-execute-phase 4` to continue.

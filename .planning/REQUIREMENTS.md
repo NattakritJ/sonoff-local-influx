@@ -45,8 +45,8 @@
 
 - [x] **OPS-01**: Daemon runs as an always-on process (not a cron script)
 - [x] **OPS-02**: Daemon handles SIGTERM and SIGINT for graceful shutdown (clean exit within 10 seconds)
-- [ ] **OPS-03**: Daemon emits structured log lines for key events: startup, device discovery, each energy write, write failures
-- [ ] **OPS-04**: Daemon logs a periodic heartbeat (write counter every 60 seconds) for operational visibility
+- [x] **OPS-03**: Daemon emits structured log lines for key events: startup, device discovery, each energy write, write failures
+- [x] **OPS-04**: Daemon logs a periodic heartbeat (write counter every 60 seconds) for operational visibility
 
 ### Docker Packaging
 
@@ -119,8 +119,8 @@
 | INF-05 | Phase 3: InfluxDB Writer | Complete |
 | INF-06 | Phase 3: InfluxDB Writer | Complete |
 | CFG-04 | Phase 3: InfluxDB Writer | Complete |
-| OPS-03 | Phase 4: Integration + Docker | Pending |
-| OPS-04 | Phase 4: Integration + Docker | Pending |
+| OPS-03 | Phase 4: Integration + Docker | Complete |
+| OPS-04 | Phase 4: Integration + Docker | Complete |
 | DOC-01 | Phase 4: Integration + Docker | Pending |
 | DOC-02 | Phase 4: Integration + Docker | Pending |
 | DOC-03 | Phase 4: Integration + Docker | Pending |

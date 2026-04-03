@@ -72,7 +72,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — Wire extractor + writer into SonoffDaemon; add InfluxDB env var parsing; heartbeat; pin requirements.txt
+- [x] 04-01-PLAN.md — Wire extractor + writer into SonoffDaemon; add InfluxDB env var parsing; heartbeat; pin requirements.txt
 - [ ] 04-02-PLAN.md — Docker packaging: Dockerfile, docker-compose.yml, .env.example; human-verify checkpoint
 
 ## Progress
@@ -82,4 +82,4 @@ Plans:
 | 1. LAN Transport Foundation | 2/2 | Complete   | 2026-04-03 |
 | 2. Energy Extraction | 2/2 | Complete   | 2026-04-03 |
 | 3. InfluxDB Writer | 2/2 | Complete   | 2026-04-03 |
-| 4. Integration + Docker | 0/2 | Not started | - |
+| 4. Integration + Docker | 1/2 | In Progress|  |
