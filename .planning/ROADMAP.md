@@ -97,3 +97,13 @@ Plans:
 | 3. InfluxDB Writer | 2/2 | Complete   | 2026-04-03 |
 | 4. Integration + Docker | 2/2 | Complete   | 2026-04-03 |
 | 5. Static IP + Polling Mode | 0/? | Pending    | — |
+
+### Phase 6: Add POWCT grid backfeed capture: store dayPowerSupply, supplyCurrent and supplyPower as negative current and power fields in InfluxDB for uiid 190 devices
+
+**Goal:** Extend UIID 190 (SONOFF POWCT) energy extraction to capture grid backfeed metrics — sign-encoding `supplyPower`/`supplyCurrent` as negative `power`/`current` values in InfluxDB, and adding a new `energy_backfeed_today` field from `dayPowerSupply` — enabling a single Grafana `power` query to show both consumption (positive) and export (negative)
+**Requirements**: EXT-06
+**Depends on:** Phase 5
+**Plans:** 1 plan
+
+Plans:
+- [ ] 06-01-PLAN.md — TDD: extend EnergyReading + extract_energy() UIID 190 backfeed branch + writer.write() energy_backfeed_today field
