@@ -128,7 +128,7 @@ Progress: [██████████] 100%
 |---|-------------|------|--------|-----------|
 | 260403-r2z | commit | 2026-04-03 | 6c172df | [260403-r2z-commit](./quick/260403-r2z-commit/) |
 | 260403-s3b | fix InfluxDB table name — use device_name | 2026-04-03 | 5ef9eaa | [260403-s3b](./quick/260403-s3b-fix-influxdb-table-name-use-device-name-/) |
-| 260403-s9b | round power/voltage/current to 2dp in extractor | 2026-04-03 | 1ab8025 | [260403-s9b](./quick/260403-s9b-trim-numeric-data-to-two-decimal-places/) |
+| 260403-s9b | trim numeric data to two decimal places | 2026-04-03 | 1ab8025 | [260403-s9b-trim-numeric-data-to-two-decimal-places](./quick/260403-s9b-trim-numeric-data-to-two-decimal-places/) |
 
 ---
 
