@@ -18,7 +18,9 @@ Supported single-channel UIIDs and their scaling:
     - 277  (XMiniDim):        power, current, voltage
     - 7032 (S60ZBTPF):        power, current, voltage; dayKwh → energy_today
 
-Multi-channel UIIDs (DualR3=126, SPM-4Relay=130) are handled in plan 02-02.
+Multi-channel UIIDs (actPow_00..03 params, ×0.01 scaling):
+  - 126  (DualR3):         2 channels — actPow_00/01, current_00/01, voltage_00/01
+  - 130  (SPM-4Relay):     4 channels — actPow_00..03, current_00..03, voltage_00..03
 """
 
 from __future__ import annotations
@@ -45,7 +47,7 @@ _SCALE_1: frozenset[int] = frozenset({32, 182, 226})
 # UIIDs whose raw values must be divided by 100 (×0.01)
 _SCALE_001: frozenset[int] = frozenset({190, 262, 276, 277, 7032})
 
-# All supported UIIDs
+# All supported single-channel UIIDs
 _SUPPORTED: frozenset[int] = _SCALE_1 | _SCALE_001
 
 # UIIDs that carry dayKwh (daily energy total) in params
@@ -57,6 +59,15 @@ _226_MAP: dict[str, str] = {
     "current": "phase_0_c",
     "voltage": "phase_0_v",
 }
+
+# Multi-channel UIID → number of channels
+_MULTI_CHANNEL_UIIDS: dict[int, int] = {
+    126: 2,  # DualR3: 2 channels
+    130: 4,  # SPM-4Relay: 4 channels
+}
+
+# Positional suffixes for multi-channel params (channel index → suffix)
+_MULTI_PARAM_SUFFIXES: list[str] = ["_00", "_01", "_02", "_03"]
 
 
 def _to_float(value: object) -> float | None:
@@ -128,3 +139,63 @@ def extract_energy(
         energy_today=energy_today,
         channel=None,
     )
+
+
+def extract_energy_multi(
+    device_id: str,
+    uiid: int,
+    params: dict,
+) -> list[EnergyReading]:
+    """Extract energy metrics for multi-channel Sonoff devices (DualR3 / SPM-4Relay).
+
+    Each channel uses ``actPow_0N``, ``current_0N``, ``voltage_0N`` params (×0.01 scale).
+    Only channels for which at least one param is present are included in the result.
+    Channels with no params at all are silently skipped.
+
+    No ``energy_today`` is available for these UIIDs via LAN (cloud-only energy history).
+
+    Supported UIIDs:
+        - 126 (DualR3):      2 channels
+        - 130 (SPM-4Relay):  4 channels
+
+    Args:
+        device_id:  Device identifier (used as a tag in InfluxDB).
+        uiid:       Sonoff device UIID.  Returns ``[]`` for unsupported UIIDs.
+        params:     Raw params dict from the LAN event.
+
+    Returns:
+        List of ``EnergyReading`` objects, one per present channel (may be empty).
+    """
+    if uiid not in _MULTI_CHANNEL_UIIDS:
+        return []
+
+    num_channels = _MULTI_CHANNEL_UIIDS[uiid]
+    readings: list[EnergyReading] = []
+
+    for ch_idx in range(num_channels):
+        suffix = _MULTI_PARAM_SUFFIXES[ch_idx]
+        raw_power = params.get(f"actPow{suffix}")
+        raw_current = params.get(f"current{suffix}")
+        raw_voltage = params.get(f"voltage{suffix}")
+
+        # Skip channels with no params present
+        if raw_power is None and raw_current is None and raw_voltage is None:
+            continue
+
+        power = round(_to_float(raw_power) * 0.01, 4) if raw_power is not None else None
+        current = round(_to_float(raw_current) * 0.01, 4) if raw_current is not None else None
+        voltage = round(_to_float(raw_voltage) * 0.01, 4) if raw_voltage is not None else None
+
+        readings.append(
+            EnergyReading(
+                device_id=device_id,
+                uiid=uiid,
+                power=power,
+                voltage=voltage,
+                current=current,
+                energy_today=None,  # No dayKwh for DualR3/SPM via LAN
+                channel=ch_idx + 1,  # 1-based channel number
+            )
+        )
+
+    return readings
