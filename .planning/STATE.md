@@ -19,7 +19,7 @@ progress:
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
 **Status:** Milestone complete
-**Last updated:** 2026-04-03 - Completed quick task 260403-r2z: commit
+**Last updated:** 2026-04-03 - Completed quick task 260403-s3b: fix InfluxDB table name use device_name
 
 ---
 
@@ -127,10 +127,11 @@ Progress: [██████████] 100%
 | # | Description | Date | Commit | Directory |
 |---|-------------|------|--------|-----------|
 | 260403-r2z | commit | 2026-04-03 | 6c172df | [260403-r2z-commit](./quick/260403-r2z-commit/) |
+| 260403-s3b | fix InfluxDB table name — use device_name | 2026-04-03 | 5ef9eaa | [260403-s3b](./quick/260403-s3b-fix-influxdb-table-name-use-device-name-/) |
 
 ---
 
 ## Session Continuity
 
-**Stopped at:** Completed quick task 260403-r2z: commit
+**Stopped at:** Completed quick task 260403-s3b: fix InfluxDB table name — use device_name
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
