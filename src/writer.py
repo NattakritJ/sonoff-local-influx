@@ -40,7 +40,7 @@ class InfluxWriter:
         - measurement = device_name (fallback: device_id when device_name is None)
         - fields: power, voltage, current, energy_today, energy_backfeed_today — None values omitted (per D-03)
         - Uses asyncio.to_thread() to avoid blocking the event loop (per D-08, INF-05)
-        - On any write failure: logs ERROR, returns None — does not raise (per D-10, INF-06)
+        - On any write failure: logs WARNING (no traceback), returns None — does not raise (per D-10, INF-06)
         """
         # Build fields dict — omit None values entirely (per D-03)
         fields: dict[str, float] = {}
@@ -69,12 +69,9 @@ class InfluxWriter:
         try:
             await asyncio.to_thread(self._client.write, record=point)
         except Exception as e:
-            _LOGGER.error(
-                "InfluxDB write failed | device=%s | %s",
-                reading.device_id,
-                e,
-                exc_info=e,
-            )
+            # Catch all I/O and network failures (InfluxDBError, urllib3 errors, OSError, etc.)
+            # Log a single warning line — no traceback, no re-raise (per D-10, INF-06)
+            _LOGGER.warning("InfluxDB write failed: %s", e)
 
     async def check_connectivity(self) -> None:
         """Perform a non-destructive connectivity check against InfluxDB.

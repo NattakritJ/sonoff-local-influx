@@ -335,11 +335,11 @@ def test_write_returns_none_on_success():
 
 
 # ---------------------------------------------------------------------------
-# Test 13: write() swallows exceptions, logs ERROR
+# Test 13: write() swallows exceptions, logs WARNING (no traceback)
 # ---------------------------------------------------------------------------
 
-def test_write_catches_exception_and_logs_error(caplog):
-    """write() catches exceptions from client.write(), logs ERROR, returns None."""
+def test_write_catches_exception_and_logs_warning(caplog):
+    """write() catches exceptions from client.write(), logs WARNING (no traceback), returns None."""
     with patch("writer.InfluxDBClient3") as mock_cls:
         mock_client = MagicMock()
         mock_client.write.side_effect = Exception("connection refused")
@@ -348,11 +348,14 @@ def test_write_catches_exception_and_logs_error(caplog):
         writer = InfluxWriter("http://localhost:8086", "token", "db")
         reading = _reading()
 
-        with caplog.at_level(logging.ERROR, logger="writer"):
+        with caplog.at_level(logging.WARNING, logger="writer"):
             result = asyncio.run(writer.write(reading, "dev"))
 
         assert result is None
-        assert any("ERROR" in r.levelname for r in caplog.records)
+        assert any("WARNING" in r.levelname for r in caplog.records)
+        # Verify warning message contains the exception text (no exc_info/traceback)
+        assert any("InfluxDB write failed" in r.message for r in caplog.records)
+        assert all(r.exc_info is None for r in caplog.records if "InfluxDB write failed" in r.message)
 
 
 # ---------------------------------------------------------------------------
