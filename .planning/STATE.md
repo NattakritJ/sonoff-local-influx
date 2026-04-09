@@ -5,10 +5,10 @@ milestone_name: milestone
 current_phase: 06
 current_plan: Not started
 status: completed
-stopped_at: Completed Phase 06 Plan 01 — UIID 190 backfeed extraction + writer extension
-last_updated: "2026-04-03T18:41:56.895Z"
+stopped_at: Phase 7 context gathered
+last_updated: "2026-04-09T03:56:41.131Z"
 progress:
-  total_phases: 6
+  total_phases: 7
   completed_phases: 5
   total_plans: 9
   completed_plans: 9
@@ -122,6 +122,7 @@ Progress: [████████░░] 80%
 ### Roadmap Evolution
 
 - Phase 6 added: Add POWCT grid backfeed capture: store dayPowerSupply, supplyCurrent and supplyPower as negative current and power fields in InfluxDB for uiid 190 devices
+- Phase 7 added: Direct connection without mDNS if already knowing device's IP
 
 ### Todos
 
@@ -144,5 +145,5 @@ Progress: [████████░░] 80%
 
 ## Session Continuity
 
-**Stopped at:** Completed Phase 06 Plan 01 — UIID 190 backfeed extraction + writer extension
+**Stopped at:** Phase 7 context gathered
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
