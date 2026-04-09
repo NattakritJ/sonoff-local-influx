@@ -12,6 +12,7 @@ class DeviceConfig(TypedDict, total=False):
     uiid: int               # required — Sonoff device UIID (e.g. 190 for POWR3); not broadcast via mDNS
     devicekey: str          # required for encrypted devices; omit for DIY
     device_name: str        # optional display name
+    ip: str                 # optional static IP — skip mDNS discovery when set
 
 
 def parse_config() -> list[DeviceConfig]:
@@ -67,6 +68,8 @@ def parse_config() -> list[DeviceConfig]:
                 device_name=dev.get("device_name", dev["device_id"]),
             )
         )
+        if "ip" in dev:
+            validated[-1]["ip"] = dev["ip"]
 
     return validated
 
@@ -120,3 +123,29 @@ def parse_log_level() -> int:
         )
         sys.exit(1)
     return getattr(logging, raw)
+
+
+def parse_poll_interval() -> int:
+    """Read SONOFF_POLL_INTERVAL env var and return polling interval in seconds.
+
+    Defaults to 10 if not set. Calls sys.exit(1) on non-integer or non-positive values.
+    """
+    raw = os.environ.get("SONOFF_POLL_INTERVAL")
+    if raw is None:
+        return 10
+    try:
+        value = int(raw)
+    except ValueError:
+        print(
+            f"ERROR: SONOFF_POLL_INTERVAL={raw!r} is not a valid integer.\n"
+            f"  Expected a positive integer number of seconds (e.g. 10, 30, 60).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    if value <= 0:
+        print(
+            f"ERROR: SONOFF_POLL_INTERVAL={value} must be a positive integer (> 0).",
+            file=sys.stderr,
+        )
+        sys.exit(1)
+    return value
