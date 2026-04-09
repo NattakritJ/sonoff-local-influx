@@ -114,8 +114,9 @@ class SonoffDaemon:
         device: XDevice = {
             "deviceid": device_id,
             "host": cfg["ip"],
-            "devicekey": cfg.get("devicekey", ""),
         }
+        if cfg.get("devicekey"):
+            device["devicekey"] = cfg["devicekey"]
         while True:
             try:
                 result = await registry.send(device, command="getState")
