@@ -7,8 +7,9 @@ import sys
 import aiohttp
 from zeroconf.asyncio import AsyncZeroconf
 
-from config import parse_config, parse_influx_config, parse_log_level
+from config import parse_config, parse_influx_config, parse_log_level, parse_poll_interval
 from ewelink import SIGNAL_UPDATE, XRegistryLocal
+from ewelink.base import XDevice
 from extractor import EnergyReading, extract_energy, extract_energy_multi
 from writer import InfluxWriter
 from config import DeviceConfig
@@ -33,25 +34,60 @@ class SonoffDaemon:
         for sig in (signal.SIGTERM, signal.SIGINT):
             loop.add_signal_handler(sig, self._shutdown.set)
 
+        all_devices = list(self._devices.values())
+        ip_devices = [d for d in all_devices if "ip" in d]
+        mdns_devices = [d for d in all_devices if "ip" not in d]
+        poll_interval = parse_poll_interval()
+
         async with aiohttp.ClientSession() as session:
             registry = XRegistryLocal(session)
             registry.dispatcher_connect(SIGNAL_UPDATE, self._on_update)
 
-            azc = AsyncZeroconf()
-            registry.start(azc.zeroconf)
+            azc: AsyncZeroconf | None = None
+            if mdns_devices:
+                azc = AsyncZeroconf()
+                registry.start(azc.zeroconf)
 
-            _LOGGER.info(
-                "SonoffLAN-InfluxDB ready | devices=%d | influx=%s | ids=%s",
-                len(self._devices),
-                self._writer._host if hasattr(self._writer, "_host") else "configured",
-                list(self._devices.keys()),
-            )
+            if ip_devices:
+                _LOGGER.info(
+                    "SonoffLAN-InfluxDB ready | devices=%d (polling=%d, mdns=%d) | poll_interval=%ds | influx=%s | ids=%s",
+                    len(all_devices),
+                    len(ip_devices),
+                    len(mdns_devices),
+                    poll_interval,
+                    self._writer._host if hasattr(self._writer, "_host") else "configured",
+                    list(self._devices.keys()),
+                )
+            else:
+                _LOGGER.info(
+                    "SonoffLAN-InfluxDB ready | devices=%d | influx=%s | ids=%s",
+                    len(all_devices),
+                    self._writer._host if hasattr(self._writer, "_host") else "configured",
+                    list(self._devices.keys()),
+                )
+
+            polling_tasks: list[asyncio.Task] = [
+                asyncio.create_task(
+                    self._poll_device(cfg, registry, poll_interval),
+                    name=f"poll-{cfg['device_id']}",
+                )
+                for cfg in ip_devices
+            ]
 
             # Start heartbeat background task
             heartbeat_task = asyncio.ensure_future(self._heartbeat())
 
             # Wait for shutdown signal
             await self._shutdown.wait()
+
+            # Cancel polling tasks
+            for task in polling_tasks:
+                task.cancel()
+            for task in polling_tasks:
+                try:
+                    await task
+                except asyncio.CancelledError:
+                    pass
 
             # Cancel heartbeat
             heartbeat_task.cancel()
@@ -62,9 +98,44 @@ class SonoffDaemon:
 
             # Clean shutdown
             await registry.stop()
-            await azc.async_close()
+            if azc is not None:
+                await azc.async_close()
             self._writer.close()
             _LOGGER.info("Daemon stopped cleanly.")
+
+    async def _poll_device(
+        self,
+        cfg: DeviceConfig,
+        registry: XRegistryLocal,
+        interval: int,
+    ) -> None:
+        """Poll a static-IP device via HTTP getState at the configured interval."""
+        device_id = cfg["device_id"]
+        device: XDevice = {
+            "deviceid": device_id,
+            "host": cfg["ip"],
+            "devicekey": cfg.get("devicekey", ""),
+        }
+        while True:
+            try:
+                result = await registry.send(device, command="getState")
+                if result != "online":
+                    _LOGGER.warning(
+                        "POLL FAILED | %s (%s) | %s",
+                        device_id,
+                        cfg.get("device_name", device_id),
+                        result,
+                    )
+            except asyncio.CancelledError:
+                raise
+            except Exception as e:
+                _LOGGER.warning(
+                    "POLL ERROR | %s (%s) | %s",
+                    device_id,
+                    cfg.get("device_name", device_id),
+                    e,
+                )
+            await asyncio.sleep(interval)
 
     def _on_update(self, msg: dict) -> None:
         """Handle every mDNS update event; extract energy and schedule writes."""
