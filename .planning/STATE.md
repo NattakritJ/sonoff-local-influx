@@ -3,22 +3,22 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 current_phase: 07
-current_plan: 2
-status: executing
-stopped_at: Completed 07-01-PLAN.md
-last_updated: "2026-04-09T04:24:05.074Z"
+current_plan: 1
+status: verifying
+stopped_at: Completed 07-02-PLAN.md — Phase 7 complete, all 11 plans done, project milestone v1.0 achieved
+last_updated: "2026-04-09T04:37:33.670Z"
 progress:
   total_phases: 7
-  completed_phases: 5
+  completed_phases: 6
   total_plans: 11
-  completed_plans: 10
-  percent: 91
+  completed_plans: 11
+  percent: 100
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Ready to execute
+**Status:** Phase complete — ready for verification
 **Last updated:** 2026-04-03 - Added Phase 5: Static IP + Polling Mode
 
 ---
@@ -33,16 +33,16 @@ progress:
 
 ## Current Position
 
-Phase: 07 (direct-connection-without-mdns-if-already-knowing-device-s-ip) — EXECUTING
-Plan: 2 of 2
+Phase: 07 (direct-connection-without-mdns-if-already-knowing-device-s-ip) — COMPLETE
+Plan: 2 of 2 — ALL PLANS DONE
 **Current phase:** 07
-**Current plan:** 1
-**Phase status:** Pending — run `/gsd:plan-phase` to begin
+**Current plan:** 2
+**Phase status:** Complete — milestone v1.0 achieved
 
 ```
-Progress: [█████████░] 91%
-                    ▲
-               PHASE 7 EXECUTING (Plan 2/2 next)
+Progress: [██████████] 100%
+                     ▲
+               ALL 7 PHASES COMPLETE — PROJECT MILESTONE v1.0
 ```
 
 ---
@@ -55,7 +55,9 @@ Progress: [█████████░] 91%
 | 2 | Energy Extraction | ✅ Complete (2/2 plans done) |
 | 3 | InfluxDB Writer | ✅ Complete (2/2 plans done) |
 | 4 | Integration + Docker | ✅ Complete (2/2 plans done) |
-| 5 | Static IP + Polling Mode | ⏳ Pending |
+| 5 | Static IP + Polling Mode | ✅ Complete (superseded by Phase 7) |
+| 6 | POWCT Grid Backfeed Capture | ✅ Complete (1/1 plans done) |
+| 7 | Direct Connection without mDNS | ✅ Complete (2/2 plans done) |
 
 ---
 
@@ -72,14 +74,15 @@ Progress: [█████████░] 91%
 | 04 | 01 | 2 min | 3 | 3 | 2026-04-03 |
 | 04 | 02 | 5 min | 3 | 3 | 2026-04-03 |
 
-- Plans completed: 8
-- Phases completed: 4
-- Requirements satisfied: 33 / 33 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, OPS-03, OPS-04, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06, DOC-01, DOC-02, DOC-03, DOC-04, DOC-05)
+- Plans completed: 11
+- Phases completed: 7
+- Requirements satisfied: 35 / 35 (MIG-01, MIG-02, MIG-03, LAN-01, LAN-02, LAN-03, LAN-04, LAN-05, LAN-06, CFG-01, CFG-02, CFG-03, CFG-04, OPS-01, OPS-02, OPS-03, OPS-04, EXT-01, EXT-02, EXT-03, EXT-04, EXT-05, EXT-06, INF-01, INF-02, INF-03, INF-04, INF-05, INF-06, DOC-01, DOC-02, DOC-03, DOC-04, DOC-05, LAN-07, LAN-09)
 
 ---
 | Phase 04 P02 | 5min | 3 tasks | 3 files |
 | Phase 06 P01 | 5min | 2 tasks | 3 files |
 | Phase 07 P01 | 8min | 1 tasks | 2 files |
+| Phase 07 P02 | 30min | 3 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -115,6 +118,9 @@ Progress: [█████████░] 91%
 - **[Phase 7 P01]** ip field stored via post-append mutation (`validated[-1]["ip"] = dev["ip"]`) — avoids ip=None in DeviceConfig when absent; preserves total=False semantics
 - **[Phase 7 P01]** No IP format validation at parse time — invalid IPs cause connection failure at runtime (per D-02 spec)
 - **[Phase 7 P01]** parse_poll_interval() default 10s; int(raw) coercion means "10.5" fails via ValueError → sys.exit(1)
+- **[Phase 7 P02]** Empty devicekey omitted from XDevice in _poll_device() — empty string triggered AES encryption in XRegistryLocal.send(), causing HTTP 400 from device; fix: conditionally include devicekey only when non-empty (commit 0be4211)
+- **[Phase 7 P02]** Polling task lifecycle mirrors heartbeat: create_task → store in list → cancel all on shutdown → await with CancelledError suppressed
+- **[Phase 7 P02]** AsyncZeroconf never instantiated when all devices have static IPs — guard `if mdns_devices:` prevents unnecessary mDNS startup
 
 ### Critical Pitfalls to Watch
 
@@ -149,5 +155,5 @@ Progress: [█████████░] 91%
 
 ## Session Continuity
 
-**Stopped at:** Completed 07-01-PLAN.md
-**To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
+**Stopped at:** Completed 07-02-PLAN.md — Phase 7 complete, all 11 plans done, project milestone v1.0 achieved
+**To resume:** Project complete. All 7 phases, 11 plans done. Static-IP polling mode live-tested and working. Daemon ready for production deployment.
