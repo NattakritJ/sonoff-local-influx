@@ -58,9 +58,21 @@ Reliable, low-latency energy data from Sonoff LAN devices flowing into InfluxDB 
 - ✓ `writer.write()` includes `energy_backfeed_today` in InfluxDB point when non-None; omits when None
 - ✓ 8 new TDD tests (39 total) covering all UIID 190 backfeed cases — zero regressions in other UIIDs
 
+### Validated in Phase 7: Direct Connection Without mDNS
+
+- ✓ `DeviceConfig.ip: str` optional field — `parse_config()` conditionally stores it from device JSON when present (CFG-05, LAN-08)
+- ✓ `parse_poll_interval()` — reads `SONOFF_POLL_INTERVAL` with default 10s, `sys.exit(1)` on non-integer/zero/negative (CFG-05)
+- ✓ `SonoffDaemon._poll_device()` — loops `XRegistryLocal.send(getState)`, logs `POLL FAILED`/`POLL ERROR` at WARNING, propagates `CancelledError` cleanly (LAN-07)
+- ✓ `SonoffDaemon.run()` splits devices by `ip` presence — `AsyncZeroconf` only created when at least one device lacks `ip` (LAN-09)
+- ✓ Both transport modes coexist in the same daemon instance — polling + mDNS simultaneously (LAN-07)
+- ✓ Polling tasks cancelled/awaited on SIGTERM — same shutdown lifecycle as heartbeat (LAN-07)
+- ✓ Bug fix: `devicekey` only included in `XDevice` dict when non-empty — prevents accidental AES encryption on keyless/DIY devices
+- ✓ `.env.example` documents `SONOFF_POLL_INTERVAL` and `ip` field with mixed-mode examples (DOC-05)
+- ✓ 87 unit tests passing across all phases — zero regressions
+
 ### Active
 
-(none — all milestone v1.0 requirements delivered, Phase 6 extension complete)
+(none — all milestone v1.0 requirements delivered, Phase 7 complete)
 
 ### Out of Scope
 
@@ -132,4 +144,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — Phase 6 complete: POWCT grid backfeed capture. EXT-06 delivered — sign-encoded `power`/`current` and new `energy_backfeed_today` field for UIID 190 devices. 39/39 unit tests pass.*
+*Last updated: 2026-04-09 — Phase 7 complete: static-IP polling mode. Devices with `ip` set bypass mDNS entirely via HTTP polling; devices without `ip` continue on mDNS push. Both modes coexist. 87/87 unit tests pass. Milestone v1.0 complete.*
