@@ -107,3 +107,14 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — TDD: extend EnergyReading + extract_energy() UIID 190 backfeed branch + writer.write() energy_backfeed_today field
+
+### Phase 7: Direct connection without mDNS if already knowing device's IP
+
+**Goal:** Enable devices configured with a static `ip` field to bypass mDNS discovery entirely and be polled via HTTP getState at a fixed interval — making the daemon usable on macOS and in Docker environments where mDNS multicast is unavailable, while mDNS push mode continues to work for devices without a static IP
+**Requirements**: CFG-05, LAN-07, LAN-08, LAN-09
+**Depends on:** Phase 6
+**Plans:** 2 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — TDD: ip field in DeviceConfig + parse_poll_interval() with unit tests
+- [ ] 07-02-PLAN.md — Wire polling tasks + conditional mDNS in SonoffDaemon.run(); update .env.example
