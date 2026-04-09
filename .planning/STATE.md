@@ -2,23 +2,23 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 06
-current_plan: Not started
-status: completed
-stopped_at: Phase 7 context gathered
-last_updated: "2026-04-09T03:56:41.131Z"
+current_phase: 07
+current_plan: 2
+status: executing
+stopped_at: Completed 07-01-PLAN.md
+last_updated: "2026-04-09T04:24:05.074Z"
 progress:
   total_phases: 7
   completed_phases: 5
-  total_plans: 9
-  completed_plans: 9
-  percent: 80
+  total_plans: 11
+  completed_plans: 10
+  percent: 91
 ---
 
 # STATE — SonoffLAN-InfluxDB
 
 **Project:** SonoffLAN-InfluxDB standalone daemon
-**Status:** Milestone complete
+**Status:** Ready to execute
 **Last updated:** 2026-04-03 - Added Phase 5: Static IP + Polling Mode
 
 ---
@@ -33,16 +33,16 @@ progress:
 
 ## Current Position
 
-Phase: 06 (add-powct-grid-backfeed-capture-store-daypowersupply-supplycurrent-and-supplypower-as-negative-current-and-power-fields-in-influxdb-for-uiid-190-devices) — EXECUTING
-Plan: 1 of 1
-**Current phase:** 06
-**Current plan:** Not started
+Phase: 07 (direct-connection-without-mdns-if-already-knowing-device-s-ip) — EXECUTING
+Plan: 2 of 2
+**Current phase:** 07
+**Current plan:** 1
 **Phase status:** Pending — run `/gsd:plan-phase` to begin
 
 ```
-Progress: [████████░░] 80%
+Progress: [█████████░] 91%
                     ▲
-               PHASE 5 NEXT
+               PHASE 7 EXECUTING (Plan 2/2 next)
 ```
 
 ---
@@ -79,6 +79,7 @@ Progress: [████████░░] 80%
 ---
 | Phase 04 P02 | 5min | 3 tasks | 3 files |
 | Phase 06 P01 | 5min | 2 tasks | 3 files |
+| Phase 07 P01 | 8min | 1 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -111,6 +112,9 @@ Progress: [████████░░] 80%
 - **[Phase 6 P01]** D-04/D-05: sign-encoding backfeed in existing power/current fields — no new supply_power field; supplyPower=5000 → power=-50.0
 - **[Phase 6 P01]** D-13: both-zero case for UIID 190 returns EnergyReading(power=0.0, current=0.0) explicitly — never None (only exception to "return None if no energy" rule)
 - **[Phase 6 P01]** UIID 190 dayKwh handled inline in new backfeed branch — independent of _HAS_DAY_KWH general path (190 removed from that path effectively)
+- **[Phase 7 P01]** ip field stored via post-append mutation (`validated[-1]["ip"] = dev["ip"]`) — avoids ip=None in DeviceConfig when absent; preserves total=False semantics
+- **[Phase 7 P01]** No IP format validation at parse time — invalid IPs cause connection failure at runtime (per D-02 spec)
+- **[Phase 7 P01]** parse_poll_interval() default 10s; int(raw) coercion means "10.5" fails via ValueError → sys.exit(1)
 
 ### Critical Pitfalls to Watch
 
@@ -145,5 +149,5 @@ Progress: [████████░░] 80%
 
 ## Session Continuity
 
-**Stopped at:** Phase 7 context gathered
+**Stopped at:** Completed 07-01-PLAN.md
 **To resume:** Milestone v1.0 complete. All 4 phases, 8 plans done. Project ready for live deployment.
